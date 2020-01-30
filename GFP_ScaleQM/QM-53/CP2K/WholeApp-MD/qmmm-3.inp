@@ -1,0 +1,197 @@
+&GLOBAL
+  PROJECT QMMM-3
+  PRINT_LEVEL LOW
+  RUN_TYPE MD
+&END GLOBAL
+
+&FORCE_EVAL
+  METHOD QMMM
+  STRESS_TENSOR NONE
+  &DFT
+    CHARGE 0
+!    LSD
+    &MGRID
+      CUTOFF 300
+      COMMENSURATE
+    &END MGRID
+    &QS
+      METHOD GPW
+      EPS_PGF_ORB 1.0E-15
+       &SE
+         &COULOMB
+           CUTOFF [angstrom] 10.0
+         &END
+         &EXCHANGE
+           CUTOFF [angstrom] 10.0
+         &END
+      &END
+    &END QS
+    &SCF
+      MAX_SCF 30
+      EPS_SCF 1.0E-6
+      SCF_GUESS ATOMIC
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_SINGLE_INVERSE
+      &END
+      &OUTER_SCF
+        EPS_SCF 1.0E-6
+        MAX_SCF 10
+      &END
+      &PRINT
+        &RESTART OFF
+        &END
+        &RESTART_HISTORY OFF
+        &END
+      &END
+    &END SCF
+    &XC
+      &XC_FUNCTIONAL BLYP
+      &END XC_FUNCTIONAL
+    &END XC
+  &END DFT
+  &MM
+    &FORCEFIELD
+      PARMTYPE AMBER
+      PARM_FILE_NAME gfp_new3.prmtop
+      EI_SCALE14 1.0
+      VDW_SCALE14 1.0
+      &SPLINE
+!        EMAX_SPLINE 1.0E8
+        RCUT_NB [angstrom] 12
+      &END SPLINE
+    &END FORCEFIELD
+    &POISSON
+      &EWALD
+        EWALD_TYPE SPME
+        ALPHA .40
+        GMAX 80
+      &END EWALD
+    &END POISSON
+  &END MM
+  &SUBSYS
+    &KIND O
+    ELEMENT O
+    BASIS_SET DZVP-GTH-BLYP
+    POTENTIAL GTH-BLYP-q6
+    &END KIND
+    &KIND C
+    ELEMENT C
+    BASIS_SET DZVP-GTH-BLYP
+    POTENTIAL GTH-BLYP-q4
+    &END KIND
+    &KIND N
+    ELEMENT N
+    BASIS_SET DZVP-GTH-BLYP
+    POTENTIAL GTH-BLYP-q5
+    &END KIND
+    &KIND H
+    ELEMENT H
+    BASIS_SET DZVP-GTH-BLYP
+    POTENTIAL GTH-BLYP-q1
+    &END KIND
+    &CELL
+      ABC [angstrom] 74.4532549540 65.2655532451 61.2140230236
+      ALPHA_BETA_GAMMA 90 90 90
+    &END CELL
+    &TOPOLOGY
+      CONN_FILE_FORMAT AMBER
+      CONN_FILE_NAME gfp_new3.prmtop
+    &END TOPOLOGY
+    &KIND NA+
+     ELEMENT Na
+    &END KIND
+  &END SUBSYS
+  &QMMM
+    USE_GEEP_LIB 12
+    ECOUPL S-WAVE 
+    &CELL
+      ABC 40 40 40
+      ALPHA_BETA_GAMMA 90 90 90
+    &END CELL
+    &QM_KIND O
+      MM_INDEX 974 978 3489 3490
+    &END QM_KIND
+    &QM_KIND C
+      MM_INDEX 961 966 967 969 970 971 972 973 975 976 1464 1469 2309 2312 2315 2318 3482 3485 3488
+    &END QM_KIND
+    &QM_KIND N
+      MM_INDEX 977 979 1467 1470 1473 2313 2317
+    &END QM_KIND
+    &QM_KIND H
+      MM_INDEX 984 986 987 988 989 992 1465 1466 1468 1471 1472 1474 1475 2310 2311 2314 2316 2319 3483 3484 3486 3487
+    &END QM_KIND
+! !Separate link for each cut atom bond
+    &LINK
+    QM_KIND H
+    MM_INDEX 960 
+    QM_INDEX 975
+    LINK_TYPE IMOMM
+    &END LINK
+    &LINK
+    QM_KIND H
+    MM_INDEX 962
+    QM_INDEX 979
+    LINK_TYPE IMOMM
+    &END LINK
+    &LINK
+    QM_KIND H
+    MM_INDEX 1461
+    QM_INDEX 1464
+    LINK_TYPE IMOMM
+    &END LINK
+    &LINK
+    QM_KIND H
+    MM_INDEX 2307
+    QM_INDEX 2309
+    LINK_TYPE IMOMM
+    &END LINK
+    &LINK
+    QM_KIND H
+    MM_INDEX 3480
+    QM_INDEX 3482
+    LINK_TYPE IMOMM
+    &END LINK
+  &END QMMM
+&END FORCE_EVAL
+
+&MOTION
+  &MD
+  ENSEMBLE NVT
+  TIMESTEP [fs] 1
+  STEPS    5
+  TEMPERATURE 298
+  &THERMOSTAT
+    TYPE NOSE
+    REGION GLOBAL
+    &NOSE
+      TIMECON [fs] 100.
+    &END NOSE
+  &END THERMOSTAT
+  &END MD
+
+   &PRINT
+    &RESTART                                    ! This section controls the printing of restart files
+      &EACH                                     ! A restart file will be printed every 10000 md steps
+        MD 1000
+      &END
+    &END
+    &RESTART_HISTORY                            ! This section controls dumping of unique restart files during the run keeping all of them.Most useful if recovery is needed at a later point.
+      &EACH                                     ! A new restart file will be printed every 10000 md steps
+        MD 1000
+      &END
+    &END
+    &TRAJECTORY                                 ! Thes section Controls the output of the trajectory
+      FORMAT XYZ                                ! Format of the output trajectory is XYZ
+      &EACH                                     ! New trajectory frame will be printed each 100 md steps
+        MD 100
+      &END
+    &END
+  &END PRINT
+&END MOTION
+
+&EXT_RESTART
+  RESTART_FILE_NAME NPT-1.restart
+  RESTART_COUNTERS .FALSE.
+  RESTART_THERMOSTAT .FALSE.
+&END
