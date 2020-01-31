@@ -631,6 +631,7 @@ CONTAINS
       TYPE(qmmm_gaussian_type), POINTER                  :: pgf
       TYPE(qmmm_per_pot_type), POINTER                   :: per_pot
       TYPE(qmmm_pot_type), POINTER                       :: pot
+      REAL(KIND=dp), DIMENSION(:, :), POINTER            :: pot0_2
 
 ! [AP] following variables needed for writing intermediate data required by kernel benchmark
       INTEGER :: myunit         
@@ -643,7 +644,10 @@ CONTAINS
       CHARACTER(len=1024) :: mkdir_command
       CHARACTER(len=1024) :: datafile_name
       CHARACTER(len=1024) :: datafile_path
-      
+     
+
+     print*, size(per_potentials), periodic
+ 
     CALL timeset(routineN,handle)
     CALL timeset(routineNb//"_G",handle2)
     NULLIFY(pgf, pot, per_pot)
@@ -727,20 +731,18 @@ CONTAINS
        END DO Gaussian
     END DO Radius
 
-      
-
 !     [AP] Going to write to file the data needed as input for qmmm_forces_with_gaussian_LG (formatted for portability)
       
       CALL mpi_comm_rank(mp_comm_world, taskid, ierr)
       IF (taskid < 10) then
-         format_string = "(A63,I1,A1)"
+         format_string = "(A66,I1,A1)"
       ELSE
-         format_string = "(A63,I2,A1)"
+         format_string = "(A66,I2,A1)"
       ENDIF
       
-      WRITE(datadir_path, format_string) "/work/z01/z01/aproeme/bioexcel/qmmm-JYU/write_kernel_data/data_", taskid, "/"
+      WRITE(datadir_path, format_string) "/work/d118/d118/hjudge/Bioexcel/QMMM/CP2K/benchmarks/QMScale/data_", taskid, "/"
       mkdir_command = "mkdir "//datadir_path
-      CALL EXECUTE_COMMAND_LINE(mkdir_command)
+!      CALL EXECUTE_COMMAND_LINE(mkdir_command)
       
 !     pgfs
       datafile_name = 'pgfs_size.dat'
@@ -748,6 +750,14 @@ CONTAINS
       OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
       WRITE(myunit, *) SIZE(pgfs)
       CLOSE(myunit)
+      
+!     periodic
+      datafile_name = 'periodic.dat'
+      datafile_path = trim(datadir_path)//trim(datafile_name)
+      OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+      WRITE(myunit, *) periodic
+      CLOSE(myunit)
+
 
 !     cgrid
       cgrid => grids(coarser_grid)%pw
@@ -862,44 +872,79 @@ CONTAINS
       
 
 !     per_potentials
-      NULLIFY(per_pot)
-      per_pot => per_potentials(1)%pot
-      pw => per_pot%TabLR
-      datafile_name = 'per_pot%TabLR%cr3d.dat'
-      datafile_path = trim(datadir_path)//trim(datafile_name)
-      OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
-      WRITE(myunit, *) SIZE(pw%cr3d,1)
-      WRITE(myunit, *) SIZE(pw%cr3d,2)
-      WRITE(myunit, *) SIZE(pw%cr3d,3)
-      DO k=1,SIZE(pw%cr3d,3)
-         DO j=1,SIZE(pw%cr3d,2)
-            DO i=1,SIZE(pw%cr3d,1)
-               WRITE(myunit, *) pw%cr3d(i,j,k)
+      IF (periodic) THEN
+         NULLIFY(per_pot)
+         per_pot => per_potentials(1)%pot
+         pw => per_pot%TabLR
+        datafile_name = 'per_pot%TabLR%cr3d.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) SIZE(pw%cr3d,1)
+         WRITE(myunit, *) SIZE(pw%cr3d,2)
+         WRITE(myunit, *) SIZE(pw%cr3d,3)
+         DO k=1,SIZE(pw%cr3d,3)
+            DO j=1,SIZE(pw%cr3d,2)
+               DO i=1,SIZE(pw%cr3d,1)
+                  WRITE(myunit, *) pw%cr3d(i,j,k)
+               END DO
             END DO
          END DO
-      END DO
-      CLOSE(myunit)
+         CLOSE(myunit)
       
-      datafile_name = 'per_pot%TabLR%pw_grid%npts.dat'
-      datafile_path = trim(datadir_path)//trim(datafile_name)
-      OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
-      WRITE(myunit, *) pw%pw_grid%npts
-      CLOSE(myunit)
+         datafile_name = 'per_pot%TabLR%pw_grid%npts.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) pw%pw_grid%npts
+         CLOSE(myunit)
 
-      datafile_name = 'per_pot%TabLR%pw_grid%dr.dat'
-      datafile_path = trim(datadir_path)//trim(datafile_name)
-      OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
-      WRITE(myunit, *) pw%pw_grid%dr
-      CLOSE(myunit)
+         datafile_name = 'per_pot%TabLR%pw_grid%dr.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) pw%pw_grid%dr
+         CLOSE(myunit)
       
-      datafile_name = 'per_pot%mm_atom_index.dat'
-      datafile_path = trim(datadir_path)//trim(datafile_name)
-      OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
-      WRITE(myunit, *) SIZE(per_pot%mm_atom_index)
-      WRITE(myunit, *) mm_atom_index
-      CLOSE(myunit)      
+         datafile_name = 'per_pot%mm_atom_index.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) SIZE(per_pot%mm_atom_index)
+         WRITE(myunit, *) per_pot%mm_atom_index
+         CLOSE(myunit)      
+      ELSE
+         NULLIFY(pot)
+         pot => potentials(1)%pot
+         datafile_name = 'pot%mm_atom_index.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) SIZE(pot%mm_atom_index)
+         WRITE(myunit, *) pot%mm_atom_index
+         CLOSE(myunit)
 
-      
+         datafile_name = 'pot%dx.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) pot%dx
+         CLOSE(myunit)
+
+         datafile_name = 'pot%pot0_2.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) SIZE(pot%pot0_2,1)
+         WRITE(myunit, *) SIZE(pot%pot0_2,2)
+            DO j=1,SIZE(pot%pot0_2,2)
+               DO i=1,SIZE(pot%pot0_2,1)
+                  WRITE(myunit, *) pot%pot0_2(i,j)
+               END DO
+            END DO
+         CLOSE(myunit)
+
+         datafile_name = 'cgrid%pw_grid%npts.dat'
+         datafile_path = trim(datadir_path)//trim(datafile_name)
+         OPEN(newunit=myunit, file=datafile_path, status='replace', action='WRITE')
+         WRITE(myunit, *) (cgrid%pw_grid%npts(i), i=1,3)
+         CLOSE(myunit)
+
+     END IF
+
 !     mm_cell
       datafile_name = 'mm_cell.dat'
       datafile_path = trim(datadir_path)//trim(datafile_name)

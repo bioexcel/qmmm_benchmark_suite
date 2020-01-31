@@ -8,8 +8,6 @@ MODULE qmmm_gpw_forces
                                              pbc
   USE kinds,                           ONLY: dp
   USE qmmm_util,                        ONLY: spherical_cutoff_factor
-  USE omp_lib
-
   
   IMPLICIT NONE
 
@@ -65,12 +63,12 @@ CONTAINS
       LOGICAL                                            :: shells
       
       INTEGER :: i, ii1, ii2, ii3, ii4, ij1, ij2, ij3, ij4, ik1, ik2, ik3, ik4, Imm, &
-         IndMM, IRadTyp, ivec(3), j, k, LIndMM, my_i, my_j, my_k, myind, myind2, nthreads, tid
+         IndMM, IRadTyp, ivec(3), j, k, LIndMM, my_i, my_j, my_k, myind
       INTEGER, DIMENSION(2, 3)                           :: bo, gbo
       REAL(KIND=dp) :: a1, a2, a3, abc_X(4,4), abc_X_Y(4), b1, b2, b3, c1, c2, c3, d1, d2, d3, &
          dr1, dr1c, dr1i, dr2, dr2c, dr2i, dr3, dr3c, dr3i, dvol, e1, e2, e3, f1, f2, f3, fac, &
-         g1, g2, g3, h1, h2, h3, p1, p2, p3, q1, q2, q3, qt, r1, r2, r3, &
-         rv1, rv2, rv3, s1, s1d, s1o, s2, s2d, s2o, s3, s3d, s3o, s4, s4d, s4o, &
+         ft1, ft2, ft3, g1, g2, g3, h1, h2, h3, p1, p2, p3, q1, q2, q3, qt, r1, r2, r3, rt1, rt2, &
+         rt3, rv1, rv2, rv3, s1, s1d, s1o, s2, s2d, s2o, s3, s3d, s3o, s4, s4d, s4o, &
          sph_chrg_factor, t1, t1d, t1o, t2, t2d, t2o, t3, t3d, t3o, t4, t4d, t4o, u1, u2, u3, v1, &
          v1d, v1o, v2, v2d, v2o, v3, v3d, v3o, v4, v4d, v4o, xd1, xd2, xd3, xs1, xs2, xs3
       REAL(KIND=dp), ALLOCATABLE, DIMENSION(:, :)        :: LForces
@@ -87,16 +85,6 @@ CONTAINS
     gbo   = cgrid_pw_grid_bounds
     bo    = cgrid_pw_grid_bounds_local
     grid  => cgrid_pw_grid_cr3d
-
-
-    !$OMP PARALLEL
-        nthreads = OMP_GET_NUM_THREADS()
-        tid = OMP_GET_THREAD_NUM()
-        IF (tid==0) THEN
-           print*, "Number of threads: ", nthreads
-        END IF
-    !$OMP END PARALLEL
-
     IF (par_scheme==do_par_atom) myind = 0
     Radius: DO IRadTyp = 1, pgfs_size
        grid2 => per_pot_cr3d
@@ -106,16 +94,9 @@ CONTAINS
        dr1i = 1.0_dp / dr1
        dr2i = 1.0_dp / dr2
        dr3i = 1.0_dp / dr3
-      !$OMP PARALLEL DO DEFAULT(NONE) &
-      !$OMP SHARED(bo, grid, grid2, per_pot_dr, per_pot_npts, gbo, per_pot_mm_atom_index) &
-      !$OMP SHARED(dr1, dr2, dr3, dr1i, dr2i, dr3i, dr1c, dr2c, dr3c, par_scheme, do_par_atom, mm_charges) &
-      !$OMP PRIVATE(qt, Imm, LIndMM, IndMM, sph_chrg_factor, ra, myind) &
-      !$OMP SHARED(mm_cell, dOmmOqm, dvol, shells, para_env_num_pe, para_env_mepos, IRadTyp) &
-      !$OMP SHARED(qmmm_spherical_cutoff, mm_particles_r, Forces, LForces)
-      Atoms: DO Imm = 1, SIZE(per_pot_mm_atom_index)
+       Atoms: DO Imm = 1, SIZE(per_pot_mm_atom_index)
           IF (par_scheme==do_par_atom) THEN
-             myind = Imm+(IRadTyp-1)*SIZE(per_pot_mm_atom_index)
-          !   print*, Imm, myind, myind2, para_env_num_pe, para_env_mepos
+             myind = myind + 1
              IF (MOD(myind,para_env_num_pe)/=para_env_mepos) CYCLE
           END IF
           LIndMM    =   per_pot_mm_atom_index(Imm)
@@ -132,33 +113,6 @@ CONTAINS
              qt = qt * sph_chrg_factor
           END IF
           IF (ABS(qt)<= EPSILON(0.0_dp)) CYCLE Atoms
-             CALL qmmm_loop_grid(grid, grid2, per_pot_dr, per_pot_npts, gbo, bo, dvol, &
-                  dr1, dr2, dr3, dr1i, dr2i, dr3i, dr1c, dr2c, dr3c, ra, Forces, LForces, LIndMM, qt)
-      END DO Atoms
-      !$OMP END PARALLEL DO
-    END DO Radius
-    DEALLOCATE(LForces)
-  END SUBROUTINE qmmm_forces_with_gaussian_LG
-
-  SUBROUTINE qmmm_loop_grid(grid, grid2, per_pot_dr, per_pot_npts, gbo, bo, dvol, &
-                  dr1, dr2, dr3, dr1i, dr2i, dr3i, dr1c, dr2c, dr3c, ra, Forces, LForces, LIndMM, qt)
-
-      INTEGER :: i, ii1, ii2, ii3, ii4, ij1, ij2, ij3, ij4, ik1, ik2, ik3, ik4, &
-         ivec(3), j, k, my_i, my_j, my_k, LIndMM
-      INTEGER, DIMENSION(2, 3)                           :: bo, gbo
-      REAL(KIND=dp) :: a1, a2, a3, abc_X(4,4), abc_X_Y(4), b1, b2, b3, c1, c2, c3, d1, d2, d3, &
-         dr1, dr1c, dr1i, dr2, dr2c, dr2i, dr3, dr3c, dr3i, dvol, e1, e2, e3, f1, f2, f3, fac, &
-         g1, g2, g3, h1, h2, h3, p1, p2, p3, q1, q2, q3, qt, r1, r2, r3, rt1, rt2, &
-         ft1, ft2, ft3, rt3, rv1, rv2, rv3, s1, s1d, s1o, s2, s2d, s2o, s3, s3d, s3o, s4, s4d, s4o, &
-         t1, t1d, t1o, t2, t2d, t2o, t3, t3d, t3o, t4, t4d, t4o, u1, u2, u3, v1, &
-         v1d, v1o, v2, v2d, v2o, v3, v3d, v3o, v4, v4d, v4o, xd1, xd2, xd3, xs1, xs2, xs3
-      REAL(KIND=dp), ALLOCATABLE, DIMENSION(:, :)        :: LForces
-      REAL(KIND=dp), DIMENSION(3)                        :: val, vec, ra
-      REAL(KIND=dp), DIMENSION(:, :, :), POINTER         :: grid, grid2
-      INTEGER, DIMENSION(3)                              :: per_pot_npts
-      REAL(KIND=dp), DIMENSION(3)                        :: per_pot_dr
-      REAL(KIND=dp), DIMENSION(:, :), POINTER            :: Forces
-
           rt1 = ra(1)
           rt2 = ra(2)
           rt3 = ra(3)
@@ -201,7 +155,7 @@ CONTAINS
              DO j =  bo(1,2), bo(2,2)
                 my_i= bo(1,1)-gbo(1,1)
                 xs1 = REAL(my_i,dp)*dr1c
-                rv2 = rt2 - (xs2 + dr2c*(j-bo(1,2)))
+                rv2 = rt2 - xs2
                 vec(2) = rv2
                 ivec(2) = FLOOR(vec(2)/per_pot_dr(2))
                    ij1 = MODULO(ivec(2)-1,per_pot_npts(2))+1
@@ -229,9 +183,8 @@ CONTAINS
                 s2d =  10.0_dp - 8.0_dp*f1 + 1.5_dp*f2
                 s3d =  -2.0_dp + 4.0_dp*g1 - 1.5_dp*g2
                 s4d =   0.5_dp*h2
-
                 DO i =  bo(1,1), bo(2,1)
-                   rv1 = rt1 - (xs1 + dr1c*(i-bo(1,1)))
+                   rv1 = rt1 - xs1
                    vec(1) = rv1
                    ivec(1) = FLOOR(vec(1)/per_pot_dr(1))
                    ii1 = MODULO(ivec(1)-1,per_pot_npts(1))+1
@@ -260,6 +213,61 @@ CONTAINS
                    t3d =  -2.0_dp + 4.0_dp*c1 - 1.5_dp*c2
                    t4d =   0.5_dp*d2
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Shell code corresponding to the same grid-based calculation as executed in this subroutine?
+! # v then t then s
+!
+! for ii in 1 2 3; do
+! if [[ $ii == 1 ]]; then ld=t; fi
+! if [[ $ii == 2 ]]; then ld=s; fi
+! if [[ $ii == 3 ]]; then ld=v; fi
+! #
+! for l in t s v; do
+! for i in 1 2 3 4; do
+! if [[ $ld == $l ]]; then
+!  echo "$l$i = $l${i}d*dr${ii}i"
+! else
+!  echo "$l$i = $l${i}o"
+! fi
+! done
+! done
+! #
+! for i in 1 2 3 4; do
+! for j in 1 2 3 4; do
+! echo -n "abc_X($i,$j) = "
+! for k in 1 2 3 4; do
+! if [ $k == 4 ]; then
+! echo "grid2(ii$i,ij$j,ik$k)*v$k"
+! else
+! echo -n "grid2(ii$i,ij$j,ik$k)*v$k + "
+! fi
+! done
+! done
+! done
+! echo ""
+! for j in 1 2 3 4; do
+! echo -n "abc_X_Y($j) = "
+! for k in 1 2 3 4; do
+! if [ $k == 4 ]; then
+! echo "abc_X($k,$j)*t$k"
+! else
+! echo -n "abc_X($k,$j)*t$k + "
+! fi
+! done
+! done
+! echo ""
+! echo -n "val($ii) = "
+! for k in 1 2 3 4; do
+! if [ $k == 4 ]; then
+! echo "abc_X_Y($k)*s$k"
+! else
+! echo -n "abc_X_Y($k)*s$k + "
+! fi
+! done
+! echo ""
+! done
+
                    t1     = t1d*dr1i
                    t2     = t2d*dr1i
                    t3     = t3d*dr1i
@@ -272,29 +280,26 @@ CONTAINS
                    v2     = v2o
                    v3     = v3o
                    v4     = v4o
-
                    abc_X(1,1) = grid2(ii1,ij1,ik1)*v1 + grid2(ii1,ij1,ik2)*v2 + grid2(ii1,ij1,ik3)*v3 + grid2(ii1,ij1,ik4)*v4
-                   abc_X(2,1) = grid2(ii2,ij1,ik1)*v1 + grid2(ii2,ij1,ik2)*v2 + grid2(ii2,ij1,ik3)*v3 + grid2(ii2,ij1,ik4)*v4
-                   abc_X(3,1) = grid2(ii3,ij1,ik1)*v1 + grid2(ii3,ij1,ik2)*v2 + grid2(ii3,ij1,ik3)*v3 + grid2(ii3,ij1,ik4)*v4
-                   abc_X(4,1) = grid2(ii4,ij1,ik1)*v1 + grid2(ii4,ij1,ik2)*v2 + grid2(ii4,ij1,ik3)*v3 + grid2(ii4,ij1,ik4)*v4
-                   abc_X_Y(1) = abc_X(1,1)*t1 + abc_X(2,1)*t2 + abc_X(3,1)*t3 + abc_X(4,1)*t4
-
                    abc_X(1,2) = grid2(ii1,ij2,ik1)*v1 + grid2(ii1,ij2,ik2)*v2 + grid2(ii1,ij2,ik3)*v3 + grid2(ii1,ij2,ik4)*v4
-                   abc_X(2,2) = grid2(ii2,ij2,ik1)*v1 + grid2(ii2,ij2,ik2)*v2 + grid2(ii2,ij2,ik3)*v3 + grid2(ii2,ij2,ik4)*v4
-                   abc_X(3,2) = grid2(ii3,ij2,ik1)*v1 + grid2(ii3,ij2,ik2)*v2 + grid2(ii3,ij2,ik3)*v3 + grid2(ii3,ij2,ik4)*v4
-                   abc_X(4,2) = grid2(ii4,ij2,ik1)*v1 + grid2(ii4,ij2,ik2)*v2 + grid2(ii4,ij2,ik3)*v3 + grid2(ii4,ij2,ik4)*v4
-                   abc_X_Y(2) = abc_X(1,2)*t1 + abc_X(2,2)*t2 + abc_X(3,2)*t3 + abc_X(4,2)*t4
-
                    abc_X(1,3) = grid2(ii1,ij3,ik1)*v1 + grid2(ii1,ij3,ik2)*v2 + grid2(ii1,ij3,ik3)*v3 + grid2(ii1,ij3,ik4)*v4
-                   abc_X(2,3) = grid2(ii2,ij3,ik1)*v1 + grid2(ii2,ij3,ik2)*v2 + grid2(ii2,ij3,ik3)*v3 + grid2(ii2,ij3,ik4)*v4
-                   abc_X(3,3) = grid2(ii3,ij3,ik1)*v1 + grid2(ii3,ij3,ik2)*v2 + grid2(ii3,ij3,ik3)*v3 + grid2(ii3,ij3,ik4)*v4
-                   abc_X(4,3) = grid2(ii4,ij3,ik1)*v1 + grid2(ii4,ij3,ik2)*v2 + grid2(ii4,ij3,ik3)*v3 + grid2(ii4,ij3,ik4)*v4
-                   abc_X_Y(3) = abc_X(1,3)*t1 + abc_X(2,3)*t2 + abc_X(3,3)*t3 + abc_X(4,3)*t4
-
                    abc_X(1,4) = grid2(ii1,ij4,ik1)*v1 + grid2(ii1,ij4,ik2)*v2 + grid2(ii1,ij4,ik3)*v3 + grid2(ii1,ij4,ik4)*v4
+                   abc_X(2,1) = grid2(ii2,ij1,ik1)*v1 + grid2(ii2,ij1,ik2)*v2 + grid2(ii2,ij1,ik3)*v3 + grid2(ii2,ij1,ik4)*v4
+                   abc_X(2,2) = grid2(ii2,ij2,ik1)*v1 + grid2(ii2,ij2,ik2)*v2 + grid2(ii2,ij2,ik3)*v3 + grid2(ii2,ij2,ik4)*v4
+                   abc_X(2,3) = grid2(ii2,ij3,ik1)*v1 + grid2(ii2,ij3,ik2)*v2 + grid2(ii2,ij3,ik3)*v3 + grid2(ii2,ij3,ik4)*v4
                    abc_X(2,4) = grid2(ii2,ij4,ik1)*v1 + grid2(ii2,ij4,ik2)*v2 + grid2(ii2,ij4,ik3)*v3 + grid2(ii2,ij4,ik4)*v4
+                   abc_X(3,1) = grid2(ii3,ij1,ik1)*v1 + grid2(ii3,ij1,ik2)*v2 + grid2(ii3,ij1,ik3)*v3 + grid2(ii3,ij1,ik4)*v4
+                   abc_X(3,2) = grid2(ii3,ij2,ik1)*v1 + grid2(ii3,ij2,ik2)*v2 + grid2(ii3,ij2,ik3)*v3 + grid2(ii3,ij2,ik4)*v4
+                   abc_X(3,3) = grid2(ii3,ij3,ik1)*v1 + grid2(ii3,ij3,ik2)*v2 + grid2(ii3,ij3,ik3)*v3 + grid2(ii3,ij3,ik4)*v4
                    abc_X(3,4) = grid2(ii3,ij4,ik1)*v1 + grid2(ii3,ij4,ik2)*v2 + grid2(ii3,ij4,ik3)*v3 + grid2(ii3,ij4,ik4)*v4
+                   abc_X(4,1) = grid2(ii4,ij1,ik1)*v1 + grid2(ii4,ij1,ik2)*v2 + grid2(ii4,ij1,ik3)*v3 + grid2(ii4,ij1,ik4)*v4
+                   abc_X(4,2) = grid2(ii4,ij2,ik1)*v1 + grid2(ii4,ij2,ik2)*v2 + grid2(ii4,ij2,ik3)*v3 + grid2(ii4,ij2,ik4)*v4
+                   abc_X(4,3) = grid2(ii4,ij3,ik1)*v1 + grid2(ii4,ij3,ik2)*v2 + grid2(ii4,ij3,ik3)*v3 + grid2(ii4,ij3,ik4)*v4
                    abc_X(4,4) = grid2(ii4,ij4,ik1)*v1 + grid2(ii4,ij4,ik2)*v2 + grid2(ii4,ij4,ik3)*v3 + grid2(ii4,ij4,ik4)*v4
+
+                   abc_X_Y(1) = abc_X(1,1)*t1 + abc_X(2,1)*t2 + abc_X(3,1)*t3 + abc_X(4,1)*t4
+                   abc_X_Y(2) = abc_X(1,2)*t1 + abc_X(2,2)*t2 + abc_X(3,2)*t3 + abc_X(4,2)*t4
+                   abc_X_Y(3) = abc_X(1,3)*t1 + abc_X(2,3)*t2 + abc_X(3,3)*t3 + abc_X(4,3)*t4
                    abc_X_Y(4) = abc_X(1,4)*t1 + abc_X(2,4)*t2 + abc_X(3,4)*t3 + abc_X(4,4)*t4
 
                    val(1) = abc_X_Y(1)*s1 + abc_X_Y(2)*s2 + abc_X_Y(3)*s3 + abc_X_Y(4)*s4
@@ -327,50 +332,54 @@ CONTAINS
                    v2     = v2d*dr3i
                    v3     = v3d*dr3i
                    v4     = v4d*dr3i
-
                    abc_X(1,1) = grid2(ii1,ij1,ik1)*v1 + grid2(ii1,ij1,ik2)*v2 + grid2(ii1,ij1,ik3)*v3 + grid2(ii1,ij1,ik4)*v4
-                   abc_X(2,1) = grid2(ii2,ij1,ik1)*v1 + grid2(ii2,ij1,ik2)*v2 + grid2(ii2,ij1,ik3)*v3 + grid2(ii2,ij1,ik4)*v4
-                   abc_X(3,1) = grid2(ii3,ij1,ik1)*v1 + grid2(ii3,ij1,ik2)*v2 + grid2(ii3,ij1,ik3)*v3 + grid2(ii3,ij1,ik4)*v4
-                   abc_X(4,1) = grid2(ii4,ij1,ik1)*v1 + grid2(ii4,ij1,ik2)*v2 + grid2(ii4,ij1,ik3)*v3 + grid2(ii4,ij1,ik4)*v4
-                   abc_X_Y(1) = abc_X(1,1)*t1 + abc_X(2,1)*t2 + abc_X(3,1)*t3 + abc_X(4,1)*t4
                    abc_X(1,2) = grid2(ii1,ij2,ik1)*v1 + grid2(ii1,ij2,ik2)*v2 + grid2(ii1,ij2,ik3)*v3 + grid2(ii1,ij2,ik4)*v4
-                   abc_X(2,2) = grid2(ii2,ij2,ik1)*v1 + grid2(ii2,ij2,ik2)*v2 + grid2(ii2,ij2,ik3)*v3 + grid2(ii2,ij2,ik4)*v4
-                   abc_X(3,2) = grid2(ii3,ij2,ik1)*v1 + grid2(ii3,ij2,ik2)*v2 + grid2(ii3,ij2,ik3)*v3 + grid2(ii3,ij2,ik4)*v4
-                   abc_X(4,2) = grid2(ii4,ij2,ik1)*v1 + grid2(ii4,ij2,ik2)*v2 + grid2(ii4,ij2,ik3)*v3 + grid2(ii4,ij2,ik4)*v4
-                   abc_X_Y(2) = abc_X(1,2)*t1 + abc_X(2,2)*t2 + abc_X(3,2)*t3 + abc_X(4,2)*t4
                    abc_X(1,3) = grid2(ii1,ij3,ik1)*v1 + grid2(ii1,ij3,ik2)*v2 + grid2(ii1,ij3,ik3)*v3 + grid2(ii1,ij3,ik4)*v4
-                   abc_X(2,3) = grid2(ii2,ij3,ik1)*v1 + grid2(ii2,ij3,ik2)*v2 + grid2(ii2,ij3,ik3)*v3 + grid2(ii2,ij3,ik4)*v4
-                   abc_X(3,3) = grid2(ii3,ij3,ik1)*v1 + grid2(ii3,ij3,ik2)*v2 + grid2(ii3,ij3,ik3)*v3 + grid2(ii3,ij3,ik4)*v4
-                   abc_X(4,3) = grid2(ii4,ij3,ik1)*v1 + grid2(ii4,ij3,ik2)*v2 + grid2(ii4,ij3,ik3)*v3 + grid2(ii4,ij3,ik4)*v4
-                   abc_X_Y(3) = abc_X(1,3)*t1 + abc_X(2,3)*t2 + abc_X(3,3)*t3 + abc_X(4,3)*t4
                    abc_X(1,4) = grid2(ii1,ij4,ik1)*v1 + grid2(ii1,ij4,ik2)*v2 + grid2(ii1,ij4,ik3)*v3 + grid2(ii1,ij4,ik4)*v4
+                   abc_X(2,1) = grid2(ii2,ij1,ik1)*v1 + grid2(ii2,ij1,ik2)*v2 + grid2(ii2,ij1,ik3)*v3 + grid2(ii2,ij1,ik4)*v4
+                   abc_X(2,2) = grid2(ii2,ij2,ik1)*v1 + grid2(ii2,ij2,ik2)*v2 + grid2(ii2,ij2,ik3)*v3 + grid2(ii2,ij2,ik4)*v4
+                   abc_X(2,3) = grid2(ii2,ij3,ik1)*v1 + grid2(ii2,ij3,ik2)*v2 + grid2(ii2,ij3,ik3)*v3 + grid2(ii2,ij3,ik4)*v4
                    abc_X(2,4) = grid2(ii2,ij4,ik1)*v1 + grid2(ii2,ij4,ik2)*v2 + grid2(ii2,ij4,ik3)*v3 + grid2(ii2,ij4,ik4)*v4
+                   abc_X(3,1) = grid2(ii3,ij1,ik1)*v1 + grid2(ii3,ij1,ik2)*v2 + grid2(ii3,ij1,ik3)*v3 + grid2(ii3,ij1,ik4)*v4
+                   abc_X(3,2) = grid2(ii3,ij2,ik1)*v1 + grid2(ii3,ij2,ik2)*v2 + grid2(ii3,ij2,ik3)*v3 + grid2(ii3,ij2,ik4)*v4
+                   abc_X(3,3) = grid2(ii3,ij3,ik1)*v1 + grid2(ii3,ij3,ik2)*v2 + grid2(ii3,ij3,ik3)*v3 + grid2(ii3,ij3,ik4)*v4
                    abc_X(3,4) = grid2(ii3,ij4,ik1)*v1 + grid2(ii3,ij4,ik2)*v2 + grid2(ii3,ij4,ik3)*v3 + grid2(ii3,ij4,ik4)*v4
+                   abc_X(4,1) = grid2(ii4,ij1,ik1)*v1 + grid2(ii4,ij1,ik2)*v2 + grid2(ii4,ij1,ik3)*v3 + grid2(ii4,ij1,ik4)*v4
+                   abc_X(4,2) = grid2(ii4,ij2,ik1)*v1 + grid2(ii4,ij2,ik2)*v2 + grid2(ii4,ij2,ik3)*v3 + grid2(ii4,ij2,ik4)*v4
+                   abc_X(4,3) = grid2(ii4,ij3,ik1)*v1 + grid2(ii4,ij3,ik2)*v2 + grid2(ii4,ij3,ik3)*v3 + grid2(ii4,ij3,ik4)*v4
                    abc_X(4,4) = grid2(ii4,ij4,ik1)*v1 + grid2(ii4,ij4,ik2)*v2 + grid2(ii4,ij4,ik3)*v3 + grid2(ii4,ij4,ik4)*v4
+
+                   abc_X_Y(1) = abc_X(1,1)*t1 + abc_X(2,1)*t2 + abc_X(3,1)*t3 + abc_X(4,1)*t4
+                   abc_X_Y(2) = abc_X(1,2)*t1 + abc_X(2,2)*t2 + abc_X(3,2)*t3 + abc_X(4,2)*t4
+                   abc_X_Y(3) = abc_X(1,3)*t1 + abc_X(2,3)*t2 + abc_X(3,3)*t3 + abc_X(4,3)*t4
                    abc_X_Y(4) = abc_X(1,4)*t1 + abc_X(2,4)*t2 + abc_X(3,4)*t3 + abc_X(4,4)*t4
 
-
                    val(3) = abc_X_Y(1)*s1 + abc_X_Y(2)*s2 + abc_X_Y(3)*s3 + abc_X_Y(4)*s4
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                    fac = grid(i,j,k)
                    ft1 = ft1 + val(1) * fac
                    ft2 = ft2 + val(2) * fac
                    ft3 = ft3 + val(3) * fac
+                   xs1 = xs1 + dr1c
                 END DO
+                xs2 = xs2 + dr2c
              END DO
           END DO LoopOnGrid
           qt = - qt * dvol
-
           LForces(1,LindMM) = ft1 * qt
           LForces(2,LindMM) = ft2 * qt
           LForces(3,LindMM) = ft3 * qt
+
           Forces(1,LIndMM) = Forces(1,LIndMM) + LForces(1,LindMM)
           Forces(2,LIndMM) = Forces(2,LIndMM) + LForces(2,LindMM)
           Forces(3,LIndMM) = Forces(3,LIndMM) + LForces(3,LindMM)
-  
-     END SUBROUTINE qmmm_loop_grid
+       END DO Atoms
+    END DO Radius
+    DEALLOCATE(LForces)
+  END SUBROUTINE qmmm_forces_with_gaussian_LG
 
-
+! **************************************************************************************************
   SUBROUTINE qmmm_forces_with_gaussian_LR  (pgfs_size,&
        cgrid_pw_grid_dr, cgrid_pw_grid_npts, cgrid_pw_grid_dvol, cgrid_pw_grid_bounds, cgrid_pw_grid_bounds_local, &
        cgrid_pw_grid_cr3d,&
@@ -414,7 +423,7 @@ CONTAINS
 
       INTEGER                                            :: handle, i, Imm, IndMM, IRadTyp, ix, j, &
                                                             k, LIndMM, my_i, my_j, my_k, myind, &
-                                                            n1, n2, n3, nthreads, tid
+                                                            n1, n2, n3
       INTEGER, DIMENSION(2, 3)                           :: bo, gbo
       REAL(KIND=dp)                                      :: dr1, dr2, dr3, dvol, dx, fac, ft1, ft2, &
                                                             ft3, qt, r, r2, rd1, rd2, rd3, rt1, &
@@ -438,30 +447,14 @@ CONTAINS
     bo    =  cgrid_pw_grid_bounds_local
     grid  => cgrid_pw_grid_cr3d
 
-    !$OMP PARALLEL
-        nthreads = OMP_GET_NUM_THREADS()
-        tid = OMP_GET_THREAD_NUM()
-        IF (tid==0) THEN
-           print*, "Number of threads: ", nthreads
-        END IF
-    !$OMP END PARALLEL
 
     IF (par_scheme==do_par_atom) myind = 0
     Radius: DO IRadTyp = 1, pgfs_size
        dx     =  pot_dx
        pot0_2 => pot_pot0_2
-       !$OMP PARALLEL DO DEFAULT(NONE) &
-       !$OMP SHARED(par_scheme,  para_env_num_pe, para_env_mepos, dvol, mm_atom_index, mm_particles_r, dOmmOqm) &
-       !$OMP SHARED(per_pot_mm_atom_index, do_par_atom) &
-       !$OMP SHARED(mm_cell, mm_charges, dx, LForces, Forces, qmmm_spherical_cutoff, shells, dr1, dr2, dr3, gbo, bo) &
-       !$OMP SHARED(IRadTyp, pot0_2, grid) &
-       !$OMP PRIVATE(Imm, myind, ra, LIndMM, IndMM, qt, rt1, rt2, rt3, ft1, ft2, ft3, i, j, k, sph_chrg_factor) &
-       !$OMP PRIVATE(my_k, my_j, my_i, xs3, xs2, xs1, rv1, rv2, rv3, r, ix, rx, rx2, r2, Term, fac) &
-       !$OMP PRIVATE(rd1, rd2, rd3)
        Atoms: DO Imm = 1, SIZE(per_pot_mm_atom_index)
           IF (par_scheme==do_par_atom) THEN
-!             myind = myind + 1
-             myind = Imm+(IRadTyp-1)*SIZE(per_pot_mm_atom_index)
+             myind = myind + 1
              IF (MOD(myind,para_env_num_pe)/=para_env_mepos) CYCLE
           END IF
           LIndMM    =   per_pot_mm_atom_index(Imm)

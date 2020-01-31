@@ -2,18 +2,19 @@ PROGRAM kernel_benchmark
   USE cell_types,                      ONLY: cell_type,&
                                              cell_create
   USE kinds,                           ONLY: dp
-  USE qmmm_gpw_forces,                 ONLY: qmmm_forces_with_gaussian_LG
+  USE qmmm_gpw_forces,                 ONLY: qmmm_forces_with_gaussian_LG,  qmmm_forces_with_gaussian_LR
   
   IMPLICIT NONE
   
   ! variables that will be passed to kernel
   INTEGER                                            :: pgfs_size  
   REAL(KIND=dp), DIMENSION(3)                        :: cgrid_pw_grid_dr
+  REAL(KIND=dp), DIMENSION(3)                        :: cgrid_pw_grid_npts
   REAL(KIND=dp)                                      :: cgrid_pw_grid_dvol
   INTEGER, DIMENSION(2, 3)                           :: cgrid_pw_grid_bounds
   INTEGER, DIMENSION(2, 3)                           :: cgrid_pw_grid_bounds_local
-  REAL(KIND=dp), DIMENSION(-20:20,-20:20,-20:20), TARGET     :: cgrid_pw_grid_cr3d
-  REAL(KIND=dp), DIMENSION(:,:,:), POINTER           :: cgrid_pw_grid_cr3d_PTR
+!  REAL(KIND=dp), DIMENSION(-20:20,-20:20,-20:20), TARGET     :: cgrid_pw_grid_cr3d
+  REAL(KIND=dp), DIMENSION(:,:,:), POINTER           :: cgrid_pw_grid_cr3d
   INTEGER                                            :: num_mm_atoms
   REAL(KIND=dp), DIMENSION(:), POINTER               :: mm_charges 
   INTEGER, DIMENSION(:), POINTER                     :: mm_atom_index
@@ -30,15 +31,17 @@ PROGRAM kernel_benchmark
   INTEGER                                            :: iw, par_scheme
   REAL(KIND=dp), DIMENSION(2)                        :: qmmm_spherical_cutoff
   LOGICAL                                            :: shells
+  LOGICAL                                            :: periodic
+  REAL(KIND=dp), DIMENSION(:, :), POINTER            :: pot_pot0_2
   
   ! variables used in wrapper only
   INTEGER                                            :: mm_cell_id_nr, mm_cell_ref_count, mm_cell_symmetry_id
   LOGICAL                                            :: mm_cell_orthorhombic
-  REAL(KIND=dp)                                      :: mm_cell_deth
+  REAL(KIND=dp)                                      :: mm_cell_deth, pot_dx
   INTEGER, DIMENSION(3)                              :: mm_cell_perd
   REAL(KIND=dp), DIMENSION(3, 3)                     :: mm_cell_hmat, mm_cell_h_inv
   INTEGER                                            :: myunit
-  INTEGER                                            :: i,j,k
+  INTEGER                                            :: i,j,k, ib, jb, kb, il, iu, jl, ju
   INTEGER                                            :: imax, jmax, kmax
   INTEGER                                            :: t1, t2, t3, t4, count_rate, count_max
   
@@ -51,6 +54,10 @@ PROGRAM kernel_benchmark
   READ(myunit, *) pgfs_size
   CLOSE(myunit)
   
+   ! read periodic
+  OPEN(newunit=myunit, file='./data/periodic.dat', action='READ', status='OLD')
+  READ(myunit, *) periodic
+  CLOSE(myunit)
   
   ! read cgrid
   OPEN(newunit=myunit, file='./data/cgrid%pw_grid%dr.dat', action='READ', status='OLD')
@@ -77,23 +84,32 @@ PROGRAM kernel_benchmark
   END DO
   CLOSE(myunit)
 
-  OPEN(newunit=myunit, file='./data/cgrid%pw_grid%dr.dat', action='READ', status='OLD')
-  READ(myunit, *) cgrid_pw_grid_dr
-  CLOSE(myunit)
-  
   OPEN(newunit=myunit, file='./data/cgrid%cr3d.dat', action='READ', status='OLD')
 !  ALLOCATE (cgrid_pw_grid_cr3d(41,41,41))
-  DO k=-20,20
-     DO j=-20,20
-        DO i=-20,20
-           READ(myunit, *) cgrid_pw_grid_cr3d (i,j,k)
+!  DO k=-20,20
+!     DO j=-20,20
+!        DO i=-20,20
+!           READ(myunit, *) cgrid_pw_grid_cr3d (i,j,k)
+!        END DO
+!     END DO
+!  END DO
+!  CLOSE(myunit)
+!  cgrid_pw_grid_cr3d_PTR => cgrid_pw_grid_cr3d
+     READ(myunit, *) imax
+     READ(myunit, *) jmax
+     READ(myunit, *) kmax
+     ib = (imax-1)/2
+     jb = (jmax-1)/2
+     kb = (kmax-1)/2
+     ALLOCATE (cgrid_pw_grid_cr3d(-ib:ib,-jb:jb,-kb:kb))
+     DO k=-kb,kb
+        DO j=-jb,jb
+           DO i=-ib,ib
+              READ(myunit, *) cgrid_pw_grid_cr3d(i,j,k)
+           END DO
         END DO
      END DO
-  END DO
-  CLOSE(myunit)
-
-  cgrid_pw_grid_cr3d_PTR => cgrid_pw_grid_cr3d
-
+     CLOSE(myunit)
   
   ! read num_mm_atoms
   OPEN(newunit=myunit, file='./data/num_mm_atoms.dat', action='READ', status='OLD')
@@ -143,33 +159,63 @@ PROGRAM kernel_benchmark
 
 
   ! read per_pot
-  OPEN(newunit=myunit, file='./data/per_pot%TabLR%cr3d.dat', status='OLD', action='READ')
-  READ(myunit, *) imax
-  READ(myunit, *) jmax
-  READ(myunit, *) kmax
-  ALLOCATE (per_pot_cr3d(imax,jmax,kmax))
-  DO k=1,kmax
-     DO j=1,jmax
-        DO i=1,imax
-           READ(myunit, *) per_pot_cr3d(i,j,k) 
+
+  IF (periodic) THEN
+
+     OPEN(newunit=myunit, file='./data/per_pot%TabLR%cr3d.dat', status='OLD', action='READ')
+     READ(myunit, *) imax
+     READ(myunit, *) jmax
+     READ(myunit, *) kmax
+     ALLOCATE (per_pot_cr3d(imax,jmax,kmax))
+     DO k=1,kmax
+        DO j=1,jmax
+           DO i=1,imax
+              READ(myunit, *) per_pot_cr3d(i,j,k) 
+           END DO
         END DO
      END DO
-  END DO
-  CLOSE(myunit)
+     CLOSE(myunit)
 
-  OPEN(newunit=myunit, file='./data/per_pot%TabLR%pw_grid%npts.dat', status='OLD', action='READ')
-  READ(myunit, *) per_pot_npts
-  CLOSE(myunit)
+     OPEN(newunit=myunit, file='./data/per_pot%TabLR%pw_grid%npts.dat', status='OLD', action='READ')
+     READ(myunit, *) per_pot_npts
+     CLOSE(myunit)
   
-  OPEN(newunit=myunit, file='./data/per_pot%TabLR%pw_grid%dr.dat', status='OLD', action='READ')
-  READ(myunit, *) per_pot_dr
-  CLOSE(myunit)
+     OPEN(newunit=myunit, file='./data/per_pot%TabLR%pw_grid%dr.dat', status='OLD', action='READ')
+     READ(myunit, *) per_pot_dr
+     CLOSE(myunit)
 
-  OPEN(newunit=myunit, file='./data/per_pot%mm_atom_index.dat', status='OLD', action='READ')
-  READ(myunit, *) imax
-  ALLOCATE (per_pot_mm_atom_index(imax))
-  READ(myunit, *) per_pot_mm_atom_index
-  CLOSE(myunit)
+     OPEN(newunit=myunit, file='./data/per_pot%mm_atom_index.dat', status='OLD', action='READ')
+     READ(myunit, *) imax
+     ALLOCATE (per_pot_mm_atom_index(imax))
+     READ(myunit, *) per_pot_mm_atom_index
+     CLOSE(myunit)
+  ELSE
+     OPEN(newunit=myunit, file='./data/pot%mm_atom_index.dat', status='OLD', action='READ')
+     READ(myunit, *) imax
+     ALLOCATE (per_pot_mm_atom_index(imax))
+     READ(myunit, *) per_pot_mm_atom_index
+     CLOSE(myunit)
+
+     OPEN(newunit=myunit, file='./data/pot%pot0_2.dat', status='OLD', action='READ')
+     READ(myunit, *) imax
+     READ(myunit, *) jmax
+     ALLOCATE (pot_pot0_2(imax,jmax))
+        DO j=1,jmax
+           DO i=1,imax
+              READ(myunit, *) pot_pot0_2(i,j)
+           END DO
+        END DO
+     CLOSE(myunit)
+
+     OPEN(newunit=myunit, file='./data/pot%dx.dat', status='OLD', action='READ')
+     READ(myunit, *) pot_dx
+     CLOSE(myunit)
+
+     OPEN(newunit=myunit, file='./data/cgrid%pw_grid%npts.dat', action='READ', status='OLD')
+     READ(myunit, *) cgrid_pw_grid_npts
+     CLOSE(myunit)
+  
+  END IF
   
   ! read mm_cell
   OPEN(newunit=myunit, file='./data/mm_cell.dat', status='OLD', action='READ')
@@ -223,9 +269,11 @@ PROGRAM kernel_benchmark
   WRITE(*,'(A23,F6.2,A8)') "Done initialising, took", REAL(t2 - t1)/REAL(count_rate), " seconds"
   WRITE(*, *) "Calling kernel to compute QM/MM forces..."
   
- ! call kernel      
+ ! call kernel    
+ IF (periodic) THEN  
  CALL qmmm_forces_with_gaussian_LG  (pgfs_size,&
-      cgrid_pw_grid_dr, cgrid_pw_grid_dvol, cgrid_pw_grid_bounds, cgrid_pw_grid_bounds_local, cgrid_pw_grid_cr3d_PTR,&
+      cgrid_pw_grid_dr, cgrid_pw_grid_dvol, cgrid_pw_grid_bounds, cgrid_pw_grid_bounds_local, &
+      cgrid_pw_grid_cr3d,&
       num_mm_atoms,&
       mm_charges,& 
       mm_atom_index,&
@@ -239,6 +287,24 @@ PROGRAM kernel_benchmark
       par_scheme,&
       qmmm_spherical_cutoff,&
       shells)
+  ELSE
+      CALL qmmm_forces_with_gaussian_LR  (pgfs_size,&
+      cgrid_pw_grid_dr, cgrid_pw_grid_npts, cgrid_pw_grid_dvol, cgrid_pw_grid_bounds, cgrid_pw_grid_bounds_local, &
+      cgrid_pw_grid_cr3d,&
+      num_mm_atoms,&
+      mm_charges,&
+      mm_atom_index,&
+      mm_particles_r,&
+      para_env_num_pe, para_env_mepos,&
+      Forces,&
+      per_pot_mm_atom_index, pot_dx, pot_pot0_2,&
+      mm_cell,&
+      dOmmOqm,&
+      iw,&
+      par_scheme,&
+      qmmm_spherical_cutoff,&
+      shells)
+ END IF
  
  CALL system_clock (t3, count_rate, count_max)
  WRITE(*,'(A26,F6.2,A8)') "Done running kernel, took", REAL(t3 - t2)/REAL(count_rate), " seconds"
