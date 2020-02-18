@@ -1,3 +1,0 @@
-## Adapting the kernel benchmark
-
-The file `qmmm_gpw_forces.F` was taken from CP2K release v6.1 and adapted to write to file the data structures needed to run the kernel benchmark code. It is included here in case it is desirable to generate different input data for the kernel benchmark. This can be done by copying `qmmm_gpw_forces.F` into the `/src` directory of a local CP2K distribution, adding a compilation flag to enable Fortran 2008 support in the ARCH file being used to build CP2K, building CP2K, then running it to generate the required data. 
