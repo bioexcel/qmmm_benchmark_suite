@@ -12,7 +12,7 @@
     POTENTIAL_FILE_NAME  POTENTIAL
     &MGRID
       NGRIDS 5
-      CUTOFF 300
+      CUTOFF 400
       REL_CUTOFF 50
       COMMENSURATE
     &END MGRID
@@ -74,12 +74,12 @@
     &FORCEFIELD
       PARMTYPE AMBER
       DO_NONBONDED .TRUE.
-      PARM_FILE_NAME gfp.prmtop
+      PARM_FILE_NAME gfp-new.prmtop
       EI_SCALE14 1.0
       VDW_SCALE14 1.0
       &SPLINE
-        EMAX_SPLINE 1.0E14
-        RCUT_NB [angstrom] 12
+      !  EMAX_SPLINE 1.0E14
+      !  RCUT_NB [angstrom] 12
       &END SPLINE
     &END FORCEFIELD
     &POISSON
@@ -102,30 +102,35 @@
       PERIODIC XYZ
     &END CELL
     &TOPOLOGY
-      COORD_FILE_NAME gfp.pdb
+      COORD_FILE_NAME gfp-new.pdb
       COORD_FILE_FORMAT PDB
       CONN_FILE_FORMAT AMBER
-      CONN_FILE_NAME gfp.prmtop
+      CONN_FILE_NAME gfp-new.prmtop
+      &CENTER_COORDINATES
+      &END CENTER_COORDINATES
     &END TOPOLOGY
     &KIND H  
       ELEMENT H  
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE
+      POTENTIAL GTH-PBE-q1
     &END KIND
     &KIND C  
       ELEMENT C  
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE
+      POTENTIAL GTH-PBE-q4
     &END KIND
     &KIND N  
       ELEMENT N  
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE
+      POTENTIAL GTH-PBE-q5
     &END KIND
     &KIND O  
       ELEMENT O  
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE
+      POTENTIAL GTH-PBE-q6
+    &END KIND
+    &KIND NA+
+      ELEMENT NA
     &END KIND
     &PRINT
        &CELL
@@ -134,11 +139,15 @@
        &END CELL
     &END PRINT
   &END SUBSYS
+  &PRINT
+    &FORCES ON
+    &END FORCES
+  &END PRINT
 &END FORCE_EVAL
 &MOTION
    &MD
       ENSEMBLE NVE
-      STEPS 5
+      STEPS 500
       TEMPERATURE 300
       TIMESTEP 0.5
    &END MD
