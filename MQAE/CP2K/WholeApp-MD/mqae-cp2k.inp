@@ -136,7 +136,7 @@
 &MOTION
    &MD 
       ENSEMBLE NVE
-      STEPS 500
+      STEPS 5
       TEMPERATURE 300
       TIMESTEP 1
    &END MD
