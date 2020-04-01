@@ -1,4 +1,4 @@
-%VERSION  VERSION_STAMP = V0001.000  DATE = 03/05/20  16:13:34                  
+%VERSION  VERSION_STAMP = V0001.000  DATE = 03/31/20  09:40:31                  
 %FLAG TITLE                                                                     
 %FORMAT(20a4)                                                                   
 default_name                                                                    
@@ -11,7 +11,7 @@ default_name
 %FLAG ATOM_NAME                                                                 
 %FORMAT(20a4)                                                                   
 CM1 HM11HM12HM13CM2 HM21HM22HM23C1  N2  N3  C2  O2  CA  CB  HB  CG  CD1 HD1 CD2 
-HD2 CE1 HE1 CE2 HE2 CZ  OH  Na+ O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  
+HD2 CE1 HE1 CE2 HE2 CZ  OH  NA  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  
 O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  
 H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   
 H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  
@@ -7339,7 +7339,7 @@ H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2  O   H1  H2
       46      47      48      49      50      51      52      53      -1      55
 %FLAG RESIDUE_LABEL                                                             
 %FORMAT(20a4)                                                                   
-HBD Na+ WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT 
+HBD NA  WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT 
 WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT 
 WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT 
 WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT WAT 
