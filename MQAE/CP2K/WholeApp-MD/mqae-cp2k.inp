@@ -86,36 +86,34 @@
   &SUBSYS
     &CELL
       ABC 41.751 41.751 41.751
-#      PERIODIC XYZ
+      PERIODIC XYZ
       ALPHA_BETA_GAMMA 90 90 90
     &END CELL
     &TOPOLOGY                    ! Section used to center the atomic coordinates in the given box. Useful for big molecules
       CONN_FILE_FORMAT AMBER
       CONN_FILE_NAME mqae-new.prmtop
       COORD_FILE_FORMAT PDB
-      COORD_FILE_NAME  mqae-new.pdb 
-  !    MOL_CHECK FALSE
-  !    PARA_RES FALSE
+      COORD_FILE_NAME mqae.pdb 
     &END TOPOLOGY
     &KIND H
       ELEMENT H
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE-q1
+      POTENTIAL GTH-BLYP-q1
     &END KIND
     &KIND C
       ELEMENT C
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE-q4
+      POTENTIAL GTH-BLYP-q4
     &END KIND
    &KIND O
       ELEMENT O
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE-q6
+      POTENTIAL GTH-BLYP-q6
     &END KIND
    &KIND N
       ELEMENT N
       BASIS_SET DZVP-MOLOPT-GTH
-      POTENTIAL GTH-PBE-q5
+      POTENTIAL GTH-BLYP-q5
     &END KIND
  &END SUBSYS
 
