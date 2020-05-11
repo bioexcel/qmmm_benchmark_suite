@@ -1,0 +1,65 @@
+sed 's/HSD/HID/g' $1 > temp; mv temp $1
+sed 's/ HN  / H   /g' $1 > temp; mv temp $1
+sed 's/HB2 ASP/HB3 ASP/g' $1 > temp; mv temp $1
+sed 's/HB1 ASP/HB2 ASP/g' $1 > temp; mv temp $1
+sed 's/HB2 ARG/HB3 ARG/g' $1 > temp; mv temp $1
+sed 's/HB1 ARG/HB2 ARG/g' $1 > temp; mv temp $1
+sed 's/HG2 ARG/HG3 ARG/g' $1 > temp; mv temp $1
+sed 's/HG1 ARG/HG2 ARG/g' $1 > temp; mv temp $1
+sed 's/HD2 ARG/HD3 ARG/g' $1 > temp; mv temp $1
+sed 's/HD1 ARG/HD2 ARG/g' $1 > temp; mv temp $1
+sed 's/HB2 GLN/HB3 GLN/g' $1 > temp; mv temp $1
+sed 's/HB1 GLN/HB2 GLN/g' $1 > temp; mv temp $1
+sed 's/HG2 GLN/HG3 GLN/g' $1 > temp; mv temp $1
+sed 's/HG1 GLN/HG2 GLN/g' $1 > temp; mv temp $1
+sed 's/HA2 GLY/HA3 GLY/g' $1 > temp; mv temp $1
+sed 's/HA1 GLY/HA2 GLY/g' $1 > temp; mv temp $1
+sed 's/HB2 HID/HB3 HID/g' $1 > temp; mv temp $1
+sed 's/HB1 HID/HB2 HID/g' $1 > temp; mv temp $1
+sed 's/HB2 ASN/HB3 ASN/g' $1 > temp; mv temp $1
+sed 's/HB1 ASN/HB2 ASN/g' $1 > temp; mv temp $1
+sed 's/HB2 PRO/HB3 PRO/g' $1 > temp; mv temp $1
+sed 's/HB1 PRO/HB2 PRO/g' $1 > temp; mv temp $1
+sed 's/HG2 PRO/HG3 PRO/g' $1 > temp; mv temp $1
+sed 's/HG1 PRO/HG2 PRO/g' $1 > temp; mv temp $1
+sed 's/HD2 PRO/HD3 PRO/g' $1 > temp; mv temp $1
+sed 's/HD1 PRO/HD2 PRO/g' $1 > temp; mv temp $1
+sed 's/HB2 LEU/HB3 LEU/g' $1 > temp; mv temp $1
+sed 's/HB1 LEU/HB2 LEU/g' $1 > temp; mv temp $1
+sed 's/HE2 LYS/HE3 LYS/g' $1 > temp; mv temp $1
+sed 's/HE1 LYS/HE2 LYS/g' $1 > temp; mv temp $1
+sed 's/HG2 LYS/HG3 LYS/g' $1 > temp; mv temp $1
+sed 's/HG1 LYS/HG2 LYS/g' $1 > temp; mv temp $1
+sed 's/HD2 LYS/HD3 LYS/g' $1 > temp; mv temp $1
+sed 's/HD1 LYS/HD2 LYS/g' $1 > temp; mv temp $1
+sed 's/HB2 LYS/HB3 LYS/g' $1 > temp; mv temp $1
+sed 's/HB1 LYS/HB2 LYS/g' $1 > temp; mv temp $1
+sed 's/HB2 MET/HB3 MET/g' $1 > temp; mv temp $1
+sed 's/HB1 MET/HB2 MET/g' $1 > temp; mv temp $1
+sed 's/HG2 MET/HG3 MET/g' $1 > temp; mv temp $1
+sed 's/HG1 MET/HG2 MET/g' $1 > temp; mv temp $1
+sed 's/1HG2 ILE/HG21 ILE/g' $1 > temp; mv temp $1
+sed 's/2HG2 ILE/HG22 ILE/g' $1 > temp; mv temp $1
+sed 's/3HG2 ILE/HG23 ILE/g' $1 > temp; mv temp $1
+sed 's/1HG1 ILE/HG12 ILE/g' $1 > temp; mv temp $1
+sed 's/2HG1 ILE/HG13 ILE/g' $1 > temp; mv temp $1
+sed 's/ HD1 ILE/HD11 ILE/g' $1 > temp; mv temp $1
+sed 's/ HD2 ILE/HD12 ILE/g' $1 > temp; mv temp $1
+sed 's/ HD3 ILE/HD13 ILE/g' $1 > temp; mv temp $1
+sed 's/CD  ILE/CD1 ILE/g' $1 > temp; mv temp $1
+sed 's/HG1 SER/HG  SER/g' $1 > temp; mv temp $1
+sed 's/HG1 CYS/HG  CYS/g' $1 > temp; mv temp $1
+sed 's/HB2 GLU/HB3 GLU/g' $1 > temp; mv temp $1
+sed 's/HB1 GLU/HB2 GLU/g' $1 > temp; mv temp $1
+sed 's/HG2 GLU/HG3 GLU/g' $1 > temp; mv temp $1
+sed 's/HG1 GLU/HG2 GLU/g' $1 > temp; mv temp $1
+sed 's/HB2 PHE/HB3 PHE/g' $1 > temp; mv temp $1
+sed 's/HB1 PHE/HB2 PHE/g' $1 > temp; mv temp $1
+sed 's/HB2 SER/HB3 SER/g' $1 > temp; mv temp $1
+sed 's/HB1 SER/HB2 SER/g' $1 > temp; mv temp $1
+sed 's/HB2 CYS/HB3 CYS/g' $1 > temp; mv temp $1
+sed 's/HB1 CYS/HB2 CYS/g' $1 > temp; mv temp $1
+sed 's/HB2 TRP/HB3 TRP/g' $1 > temp; mv temp $1
+sed 's/HB1 TRP/HB2 TRP/g' $1 > temp; mv temp $1
+sed 's/HB2 TYR/HB3 TYR/g' $1 > temp; mv temp $1
+sed 's/HB1 TYR/HB2 TYR/g' $1 > temp; mv temp $1
