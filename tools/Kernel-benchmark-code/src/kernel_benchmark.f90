@@ -41,7 +41,7 @@ PROGRAM kernel_benchmark
   INTEGER, DIMENSION(3)                              :: mm_cell_perd
   REAL(KIND=dp), DIMENSION(3, 3)                     :: mm_cell_hmat, mm_cell_h_inv
   INTEGER                                            :: myunit
-  INTEGER                                            :: i,j,k, ib, jb, kb, il, iu, jl, ju
+  INTEGER                                            :: i,j,k, ib1, ib2, jb1, jb2, kb1, kb2, il, iu, jl, ju
   INTEGER                                            :: imax, jmax, kmax
   INTEGER                                            :: t1, t2, t3, t4, count_rate, count_max
   
@@ -85,7 +85,6 @@ PROGRAM kernel_benchmark
   CLOSE(myunit)
 
   OPEN(newunit=myunit, file='./data/cgrid%cr3d.dat', action='READ', status='OLD')
-!  ALLOCATE (cgrid_pw_grid_cr3d(41,41,41))
 !  DO k=-20,20
 !     DO j=-20,20
 !        DO i=-20,20
@@ -95,16 +94,17 @@ PROGRAM kernel_benchmark
 !  END DO
 !  CLOSE(myunit)
 !  cgrid_pw_grid_cr3d_PTR => cgrid_pw_grid_cr3d
-     READ(myunit, *) imax
-     READ(myunit, *) jmax
-     READ(myunit, *) kmax
-     ib = (imax-1)/2
-     jb = (jmax-1)/2
-     kb = (kmax-1)/2
-     ALLOCATE (cgrid_pw_grid_cr3d(-ib:ib,-jb:jb,-kb:kb))
-     DO k=-kb,kb
-        DO j=-jb,jb
-           DO i=-ib,ib
+
+     READ(myunit, *) ib1
+     READ(myunit, *) ib2
+     READ(myunit, *) jb1
+     READ(myunit, *) jb2
+     READ(myunit, *) kb1
+     READ(myunit, *) kb2
+     ALLOCATE (cgrid_pw_grid_cr3d(ib1:ib2,jb1:jb2,kb1:kb2))
+     DO k=kb1,kb2
+        DO j=jb1,jb2
+           DO i=ib1,ib2
               READ(myunit, *) cgrid_pw_grid_cr3d(i,j,k)
            END DO
         END DO
@@ -175,6 +175,8 @@ PROGRAM kernel_benchmark
         END DO
      END DO
      CLOSE(myunit)
+
+
 
      OPEN(newunit=myunit, file='./data/per_pot%TabLR%pw_grid%npts.dat', status='OLD', action='READ')
      READ(myunit, *) per_pot_npts
