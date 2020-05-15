@@ -28,4 +28,4 @@ the TIP3P water model are used.
 
     mpi_exec -n $NPROCS cp2k.psmp -i ClC-253-cp2k.inp -o output.log
 
-On 24 processes (1 thread) the benchmark  takes ~350 seconds on ARCHER.
+On 24 processes (1 thread) the an MD step takes ~350 seconds on ARCHER.
