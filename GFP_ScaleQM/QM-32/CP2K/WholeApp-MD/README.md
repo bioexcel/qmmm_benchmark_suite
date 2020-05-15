@@ -25,4 +25,4 @@ the TIP3P water model are used.
 
     mpi_exec -n $NPROCS cp2k.psmp -i qmmm-2.inp -o output.log
 
-On 24 processes (1 thread) the an MD step takes X seconds on ARCHER
+On 24 processes (1 thread) an MD step takes X seconds on ARCHER
