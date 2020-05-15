@@ -8,7 +8,7 @@
 
 ### About
 
-This benchmark consists of a short QM/MM simulation using CP2K. 
+This benchmark consists of a short MD simulation of a QM/MM system using CP2K. 
 5 MD steps are performed with a time step of 1 fs.
 
 
@@ -26,6 +26,6 @@ the TIP3P water model are used.
 
 ### To Run: 
 
-    mpi_exec -n $NPROCS cp2k.psmp -i ClC-19.inp -o output.log
+    mpi_exec -n $NPROCS cp2k.psmp -i ClC-19-cp2k.inp -o output.log
 
-On 24 processes (1 thread) the benchmark  takes ~57 seconds on ARCHER
+On 24 processes (1 thread) the benchmark takes ~57 seconds on ARCHER
