@@ -19,14 +19,14 @@ The benchmarks are organised
 ### MQAE
 
 The MQAE system is a solute-solvent system consisting of a N-(6-methoxyquinolyl)
-acetoethyl ester in solution taken from [ref]. All 34 atoms of the ester are 
+acetoethyl ester in solution taken from [1]. All 34 atoms of the ester are 
 treated with QM whereas the remaining water atoms are treated with MM. This 
 system is chosen to represent a system with a small QM and a small MM subsystem.
 The MM parameters are rebuilt using the Amber forcefields, where the parameters 
 for the organic molecule are created using the General Amber Force Field (GAFF) 
-[REF] and the water molecules are modelled using the SPCE model [REF]. We 
+[2] and the water molecules are modelled using the SPCE model [3]. We 
 selected the BLYP functional as the XC functional in keeping with the 
-simulations performed in [ref]. An energy cut-off of 300 Ry for the plane waves
+simulations performed in [1]. An energy cut-off of 300 Ry for the plane waves
 was found to be suitable.
 
 
@@ -36,14 +36,14 @@ The ClC-19 and ClC-253 systems consist of a (ClC-ec1) chloride ion channel
 embedded in a lipid bilayer (PDB-ID: 1KPK), which is solvated in water. The
 ClC-19 and ClC-253 systems contain 19 and 253 QM atoms respectively, and 
 therefore these systems represent a small and large QM subsystem within a large
-MM subsystem (150,925 atoms in total). These systems are taken from [ref] but 
+MM subsystem (150,925 atoms in total). These systems are taken from [1] but 
 adapted slightly to reduce the number of QM atoms (by removing waters treated 
 with QM). The QM regions are modelled using the GPW method with the 
 DZVP-MOLOPT-GTH basis set and the BLYP XC functional and the corresponding
 pseudopotentials. An energy cut-off for the plane waves of 300 Ry was found to
-be suitable. The Amber14 forcefield is used for the protein and lipid14 
-forcefield is used for the lipid molecules [REF], and water molecules are 
-treated using the TIP3P model [REF].
+be suitable. The Amber14 forcefield [2] is used for the protein and lipid14 
+forcefield is used for the lipid molecules [4], and water molecules are 
+treated using the TIP3P model [5].
 
 ### CBD_PHY
 
@@ -150,8 +150,35 @@ file.
 For each system, all the required files are provided in the GRM+CP2K directory.
 To ensure consistency been the native CP2K and the interface the Amber 
 forcefields used in CP2K benchmark have been converted into Gromacs format using
-Parmed [ref]. The benchmark is set up to perform X MD steps, with a time step of
+Parmed [6]. The benchmark is set up to perform X MD steps, with a time step of
 1 fs.
 
 
 ## References
+
+[1] Extreme Scalability of DFT-Based QM/MM MD Simulations Using MiMiC.
+Viacheslav Bolnykh, Jógvan Magnus Haugaard Olsen, Simone Meloni, Martin P. Bircher, Emiliano Ippoliti, Paolo Carloni, and Ursula Rothlisberger.
+Journal of Chemical Theory and Computation 2019 15 (10), 5601-5613,
+https://doi.org/10.1021/acs.jctc.9b00424
+
+[2] ff14SB: Improving the Accuracy of Protein Side Chain and Backbone Parameters from ff99SB.
+James A. Maier, Carmenza Martinez, Koushik Kasavajhala, Lauren Wickstrom, Kevin E. Hauser, and Carlos Simmerling.
+Journal of Chemical Theory and Computation 2015 11 (8), 3696-3713
+https://doi.org/10.1021/acs.jctc.5b00255
+
+[3] The missing term in effective pair potentials.
+H. J. C. Berendsen, J. R. Grigera and T. P. Straatsma.
+Journal Physical Chemistry 1987, 91, 24, 6269-6271.
+https://doi.org/10.1021/j100308a038
+
+[4] Lipid14: The Amber Lipid Force Field.
+J. Dickson, Benjamin D. Madej, Åge A. Skjevik, Robin M. Betz, Knut Teigen, Ian R. Gould, and Ross C. Walker.
+Journal of Chemical Theory and Computation 2014 10 (2), 865-879.
+https://doi.org/10.1021/ct4010307
+
+[5] Comparison of simple potential functions for simulating liquid water.
+William L. Jorgensen, Jayaraman Chandrasekhar, and Jeffry D. Madura.
+Journel Chemicak Physics 1983 79, 926.
+https://doi.org/10.1063/1.445869
+
+[6] https://github.com/ParmEd/ParmEd
