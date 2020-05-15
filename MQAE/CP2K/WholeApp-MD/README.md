@@ -24,4 +24,4 @@ the SPCE water model are used.
 
     mpi_exec -n $NPROCS cp2k.psmp -i mqae-cp2k.inp -o output.log
 
-On 24 processes (1 thread) the an MD step takes ~26 seconds on ARCHER
+On 24 processes (1 thread) an MD step takes ~26 seconds on ARCHER
