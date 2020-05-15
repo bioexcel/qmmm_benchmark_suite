@@ -1,9 +1,18 @@
 # QM/MM Benchmark Suite
 
-This benchmark suite contains a number of QM/MM systems designed for benchmarking CP2K and the Grm+CP2K interface.
+This benchmark suite contains a number of QM/MM systems designed for
+benchmarking CP2K and the Gromacs/CP2K interface.
 
-The benchmarks are organised 
+The suite is organised with different QM/MM systems at the top level. 
 
+For each system there are three different test cases, namely:
+
+1. CP2K Whole Application MD - `system-name/CP2K/WholeApp-MD`
+2. CP2K Kernel Benchmark - `system-name/CP2K/Kernel`
+3. Gromacs/CP2K interface MD - `system-name/GRM+CP2K`
+ 
+
+In addition there is a /tools directory which contains the code required for the CP2K kernel benchmark.
 
 ## Systems
 
@@ -119,7 +128,7 @@ This benchmark is designed to run using OpenMP and can be used to determine the
 speed up on a single process as a function of the number of threads used.
 
 
-### Grm+CP2K interface
+### Gromacs/CP2K interface
 
 The test case benchmarks the Gromacs/CP2K interface for performing an MD 
 simulation. Gromacs is the main driver for the interface with libcp2k called to 
@@ -150,7 +159,7 @@ file.
 For each system, all the required files are provided in the GRM+CP2K directory.
 To ensure consistency been the native CP2K and the interface the Amber 
 forcefields used in CP2K benchmark have been converted into Gromacs format using
-Parmed [6]. The benchmark is set up to perform X MD steps, with a time step of
+ParmEd [6]. The benchmark is set up to perform X MD steps, with a time step of
 1 fs.
 
 
