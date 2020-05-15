@@ -12,7 +12,7 @@ For each system there are three different test cases, namely:
 3. Gromacs/CP2K interface MD - `system-name/GRM+CP2K`
  
 
-In addition there is a /tools directory which contains the code required for the CP2K kernel benchmark.
+In addition there is a `/tools` directory which contains the code required for the CP2K kernel benchmark.
 
 ## Systems
 
