@@ -13,7 +13,7 @@ The benchmarks are organised
 |ClC-19    |19             |150,925	    |BLYP	     |DZVP-MOLOPT-GTH |NVE	        |Y        |
 |ClC-253   |253            |150,925	    |BLYP	     |DZVP-MOLOPT-GTH |NVE          |Y        |
 |CBD_PHY   |68             |167,922	    |PBE         |DZVP-MOLOPT-GTH |NVE          |Y        |
-|GFP_QM-77 |20, 32, 54, 77 |28,264      |BLYP        |DZVP-GTH-BLYP   |NVT          |N        |
+|GFP_QM-77 |20, 32, 53, 77 |28,264      |BLYP        |DZVP-GTH-BLYP   |NVT          |N        |
 
 
 ### MQAE
