@@ -1,4 +1,4 @@
-# ClC-253 system
+# ClC-253
 
 ## QM/MM Kernel Benchmark
 
