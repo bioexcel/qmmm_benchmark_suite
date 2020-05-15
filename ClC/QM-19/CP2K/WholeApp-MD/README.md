@@ -13,7 +13,7 @@ This benchmark consists of a short QM/MM simulation using CP2K.
 
 
 
-``ClC-19.inp`` - The CP2K input file. Contains set up parameters for the MD run 
+``ClC-19-cp2k.inp`` - The CP2K input file. Contains set up parameters for the MD run 
 and QM parameters. The DZVP-MOLOPT-GTH basis set and the BLYP XC functional are used.
 
 ``ClC.prmtop`` - Amber forcefield for MM atoms. The Amber12 forcefield and
