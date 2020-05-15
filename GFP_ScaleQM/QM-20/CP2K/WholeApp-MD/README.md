@@ -12,7 +12,7 @@ This benchmark consists of a short MD simulation of a QM/MM system using CP2K.
 5 MD steps are performed with a time step of 1 fs.
 
 ``qmmm-1.inp`` - The CP2K input file. Contains set up parameters for the MD run 
-and QM parameters. The DZVP-MOLOPT-GTH basis set and the PBE XC functional are used.
+and QM parameters. The DZVP-GTH-BLYP basis set and the BLYP XC functional are used.
 
 ``gfp_new1.prmtop`` - Amber forcefield for MM atoms. The Amber03 forcefield and
 the TIP3P water model are used.
