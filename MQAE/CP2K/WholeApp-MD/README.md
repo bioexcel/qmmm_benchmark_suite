@@ -1,6 +1,6 @@
 # MQAE
 
-* N-(6-methoxyquinolyl) acetoethyl ester
+* N-(6-methoxyquinolyl) acetoethyl ester in solution
 * 16,396 atoms
 * 34 QM atoms
 
