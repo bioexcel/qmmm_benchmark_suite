@@ -1,4 +1,4 @@
-# GFP_CBD_PHY test system
+# CBD_PHY system
 
 ## QM/MM Kernel Benchmark
 
