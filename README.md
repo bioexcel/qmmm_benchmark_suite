@@ -1,28 +1,28 @@
 # QM/MM Benchmark Suite
 
-This benchmark suite contains a number of QM/MM systems designed for
-benchmarking CP2K and the Gromacs/CP2K interface.
+This repository contains QM/MM simulation benchmarks for a number of 
+biomolecular systems designed to run using CP2K and the GROMACS/CP2K 
+interface. 
 
 The suite is organised with different QM/MM systems at the top level. 
 
-For each system there are three different test cases, namely:
+For each biomolecular system there are three different benchmarks, namely:
 
-1. CP2K Whole Application MD - `system-name/CP2K/WholeApp-MD`
-2. CP2K Kernel Benchmark - `system-name/CP2K/Kernel`
-3. Gromacs/CP2K interface MD - `system-name/GRM+CP2K`
+1. CP2K QM/MM benchmark - `system-name/CP2K/WholeApp-MD`
+2. CP2K QM/MM kernel benchmark - `system-name/CP2K/Kernel`
+3. GROMACS/CP2K QM/MM benchmark - `system-name/GRM+CP2K`
  
+In addition there is a `/tools` directory which contains the code required to run the CP2K kernel benchmark.
 
-In addition there is a `/tools` directory which contains the code required for the CP2K kernel benchmark.
+## Biomolecular systems
 
-## Systems
-
-|Name      |QM atoms       |Total atoms |Functional  |Basis set       |MD run type  |Periodic?|
-|----------|---------------|------------|------------|----------------|-------------|---------|
-|MQAE      |34             |16,396      |BLYP	     |DZVP-MOLOPT-GTH |NVE          |Y        |
-|ClC-19    |19             |150,925	    |BLYP	     |DZVP-MOLOPT-GTH |NVE	        |Y        |
-|ClC-253   |253            |150,925	    |BLYP	     |DZVP-MOLOPT-GTH |NVE          |Y        |
-|CBD_PHY   |68             |167,922	    |PBE         |DZVP-MOLOPT-GTH |NVE          |Y        |
-|GFP_QM-77 |20, 32, 53, 77 |28,264      |BLYP        |DZVP-GTH-BLYP   |NVT          |N        |
+|Name      |Type                |QM atoms       |Total atoms |Functional      |Basis set       |MD run type  |Periodic?|
+|----------|--------------------|---------------|------------|----------------|----------------|-------------|---------|
+|MQAE      |solute-solvent      |34             |16,396      |BLYP	          |DZVP-MOLOPT-GTH |NVE          |Y        |
+|ClC-19    |ion channel         |19             |150,925     |BLYP	          |DZVP-MOLOPT-GTH |NVE	         |Y        |
+|ClC-253   |ion channel         |253            |150,925     |BLYP	          |DZVP-MOLOPT-GTH |NVE          |Y        |
+|CBD_PHY   |phytochrome         |68             |167,922     |PBE             |DZVP-MOLOPT-GTH |NVE          |Y        |
+|GFP_QM-77 |fluorescent protein |20, 32, 53, 77 |28,264      |BLYP            |DZVP-GTH-BLYP   |NVT          |N        |
 
 
 ### MQAE
@@ -56,15 +56,14 @@ treated using the TIP3P model [5].
 
 ### CBD_PHY
 
-This system is an example of contains a fluorescent protein, namely a 
-phytochrome dimer solvated in water (adapted from PBD-ID: 4O0P). There are 68 QM
-atoms in this system and 167,922 atoms in total, and therefore it represents a 
-fairly large QM subsystem (68 QM atoms) combined within a large MM subsystem 
-(167,922 atoms in total). The QM region is modelled using GPW method with 
-DZVP-MOLOPT-GTH basis set and PBE XC functional. An energy cut-off for the 
-plane waves of 400 Ry was found to be suitable. For the MM part the Amber03
-forcefields is used for the protein and are used with the TIP3P model for the 
-water molecules. 
+This system contains a phytochrome dimer (PBD-ID: 4O0P) with a bound chromophore, 
+solvated in water. There are 68 QM atoms in this system and 167,922 atoms in total, 
+and therefore it represents a fairly large QM subsystem (68 QM atoms) combined 
+within a large MM subsystem (167,922 atoms in total). The QM region is modelled 
+using the GPW method with DZVP-MOLOPT-GTH basis set and PBE XC functional. An 
+energy cut-off for the plane waves of 400 Ry was found to be suitable. For the MM 
+part the Amber03 forcefield is used for the protein and water molecules are treated
+using the TIP3P model. 
 
 ### GFP_ScaleQM
 
@@ -78,14 +77,13 @@ molecules. Unlike the other systems the QM subsystem is treated non-periodically
 by using the Poisson solver for the electrostatics. This means that the 
 non-periodic versions of the GEEP routines will be used.
 
-## Test cases
+## Benchmarks
 
-### CP2K Whole Application MD
+### CP2K QM/MM MD
 
-This test case consists of a short MD simulation for each system treated with 
-QM/MM using CP2K. For each system 5 steps are performed with a time step of 1
-fs. The benchmarks in this test case can each be run with the standard release
-version of CP2K.
+These benchmarks consist of a short MD simulation for each system treated with 
+QM/MM executed using CP2K. For each system 5 steps are performed with a time step 
+of 1 fs. The benchmarks can each be run with the standard release version of CP2K.
 
 For all systems the QM/MM coupling is described with the Gaussian Expansion of
 the Electrostatic Potential (GEEP) method, and any bonds between QM and MM atoms
@@ -97,21 +95,21 @@ For each system the CP2K input file (.inp), the initial input coordinates (.pdb)
 and the Amber MM forcefield (.prmtop) are provided in the WholeApp-MD directory.
 More details can be found in the README file for each system. 
 
-### CP2K Kernel
+### CP2K QM/MM kernel
 
-This test case aims to benchmark the performance of the CP2K QM/MM kernel, 
-qmmm_forces_with_gaussian_LG. This kernel is one of the routines involved in 
-calculation of the Gaussian expansion of the electrostatic potential (GEEP) 
-which is required in the calculation of the QM+MM contribution to the atomic
-forces for periodic systems.
+These benchmark the performance of the CP2K QM/MM kernel, 
+qmmm_forces_with_gaussian_LG, in isolation for the sake of convenient performance 
+analysis and optimisation. This subroutine computes the contribution to the forces
+due to the long range part of the QM/MM potential using the Gaussian Expansion of 
+the Electrostatic Potential (GEEP) and with periodic boundary conditions.
 
-This benchmark was created by running the entire code in order to generate the
-data that feeds into the kernel for a single process. This means that the data
-will be dependent on the process it was generated on, and the total number of
-processes used. This benchmark runs the kernel subroutine in serial in a way 
-that is fully representative of a single MPI rank in the parallel execution 
-context. The code and instructions to generate the relevant data can be found
-in the /tools directory of the benchmark suite.
+The kernel benchmarks were created by running the corresponding whole application 
+benchmark in order to generate the data that feeds into the kernel on a single MPI rank. 
+This means that the data will be dependent on the rank it was generated by, and the 
+total number of processes used. This benchmark runs the kernel subroutine in serial in 
+a way that is representative of the single originating MPI rank in the parallel execution
+context. The code and instructions to generate the relevant data can be found in the 
+/tools directory of the benchmark suite.
 
 For each system, this required data is provided in the /data directory. 
 The code to run the benchmark itself is provided in the /src directory,
@@ -120,7 +118,7 @@ The /outputs directory contains the force output from running the kernel
 benchmark and can be used to check the correctness of any changes made to the
 kernel. 
 
-When run the kernel benchmark proceeds by reading in the generated data, and 
+When run, a kernel benchmark proceeds by reading in the generated data and 
 then calling the kernel in question, qmmm_forces_with_gaussian_LG, to calculate
 the forces. The forces are written out in order to check for correctness and the
 run time for the kernel subroutine itself is reported using the system_clock().
@@ -128,27 +126,27 @@ This benchmark is designed to run using OpenMP and can be used to determine the
 speed up on a single process as a function of the number of threads used.
 
 
-### Gromacs/CP2K interface
+### GROMACS+CP2K QM/MM MD
 
-The test case benchmarks the Gromacs/CP2K interface for performing an MD 
-simulation. Gromacs is the main driver for the interface with libcp2k called to 
+These benchmark the GROMACS/CP2K interface for performing a QM/MM MD 
+simulation. GROMACS is the main driver for the interface, with libcp2k called to 
 calculate the QM/MM energies and forces each MD step. Input parameters are
 passed through the cp2k.inp file, which is used to generate a force environment
 within CP2K. This is maintained throughout the simulation and is used to improve 
 the performance by using the density function from the previous step to 
 extrapolate the wavefunction of the next step (using the always stable 
 predictor corrector method - ASPC). At each step, updated atomic positions 
-are passed from Gromacs through libcp2k and the atomic forces and the energy 
-are then calculated and returned.
+are passed from GROMACS through calls to libcp2k and the atomic forces and the 
+energy are then calculated and returned.
 
-This benchmark requires the use of Gromacs built with the CP2K interface. To do
-this, CP2K must first be built as a library. When building Gromacs, libcp2k.h 
+This benchmark requires the use of GROMACS built with the CP2K interface. To do
+this, CP2K must first be built as a library. When building GROMACS, libcp2k.h 
 needs to be included in the header search path and the path to libcp2k.a needs 
 to be added to the library path.
 
-The interface is run in almost the same way as Gromacs, with the required files
+The interface is run in almost the same way as GROMACS, with the required files
 being the topology file (.top), the configuration file (.gro), the MD
-paramemters file (grompp.mdp) and the index (.ndx) file. The major differences
+parameters file (grompp.mdp) and the index (.ndx) file. The major differences
 are in the .mdp file where values specific to QM/MM simulation are provided.
 The QM atoms group may be specified here, with the atom numbers given in the
 index file. QM/MM parameters can also be supplied to CP2K in this file. It is
@@ -157,10 +155,10 @@ parameters for the QM/MM calculations by setting QMMMInput=INPUT in the .mdp
 file.
 
 For each system, all the required files are provided in the GRM+CP2K directory.
-To ensure consistency been the native CP2K and the interface the Amber 
-forcefields used in CP2K benchmark have been converted into Gromacs format using
-ParmEd [6]. The benchmark is set up to perform X MD steps, with a time step of
-1 fs.
+To ensure consistency between the CP2K standalone benchmark and its corresponding 
+GROMACS/CP2K interface benchmark, the Amber forcefields used in the CP2K benchmark 
+were converted into GROMACS format using ParmEd [6]. The benchmark is set up to 
+perform X MD steps, with a time step of 1 fs.
 
 
 ## References
