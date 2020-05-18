@@ -8,9 +8,9 @@ The suite is organised with different QM/MM systems at the top level.
 
 For each biomolecular system there are three different benchmarks, namely:
 
-1. CP2K QM/MM benchmark - `system-name/CP2K/WholeApp-MD`
+1. CP2K QM/MM MD benchmark - `system-name/CP2K/WholeApp-MD`
 2. CP2K QM/MM kernel benchmark - `system-name/CP2K/Kernel`
-3. GROMACS/CP2K QM/MM benchmark - `system-name/GRM+CP2K`
+3. GROMACS+CP2K QM/MM MD benchmark - `system-name/GRM+CP2K`
  
 In addition there is a `/tools` directory which contains the code required to run the CP2K kernel benchmark.
 
