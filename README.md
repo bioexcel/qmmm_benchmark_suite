@@ -86,7 +86,7 @@ QM/MM executed using CP2K. For each system 5 steps are performed with a time ste
 of 1 fs. The benchmarks can each be run with the standard release version of CP2K.
 
 For all systems the QM/MM coupling is described with the Gaussian Expansion of
-the Electrostatic Potential (GEEP) method, and any bonds between QM and MM atoms
+the Electrostatic Potential (GEEP) method [6][7], and any bonds between QM and MM atoms
 are treated using the Generalized Hybrid Orbital (GHO) method. The treatment of
 the QM atoms may vary between systems as the basis sets and exchange correlation
 functionals have been chosen depending on the system in question.
@@ -101,7 +101,7 @@ These benchmark the performance of the CP2K QM/MM kernel,
 qmmm_forces_with_gaussian_LG, in isolation for the sake of convenient performance 
 analysis and optimisation. This subroutine computes the contribution to the forces
 due to the long range part of the QM/MM potential using the Gaussian Expansion of 
-the Electrostatic Potential (GEEP) and with periodic boundary conditions.
+the Electrostatic Potential (GEEP) with periodic boundary conditions.
 
 The kernel benchmarks were created by running the corresponding whole application 
 benchmark in order to generate the data that feeds into the kernel on a single MPI rank. 
@@ -157,8 +157,8 @@ file.
 For each system, all the required files are provided in the GRM+CP2K directory.
 To ensure consistency between the CP2K standalone benchmark and its corresponding 
 GROMACS/CP2K interface benchmark, the Amber forcefields used in the CP2K benchmark 
-were converted into GROMACS format using ParmEd [6]. The benchmark is set up to 
-perform X MD steps, with a time step of 1 fs.
+were converted into GROMACS format using ParmEd [8]. The benchmark is set up to 
+perform 5 MD steps, with a time step of 1 fs.
 
 
 ## References
@@ -188,4 +188,14 @@ William L. Jorgensen, Jayaraman Chandrasekhar, and Jeffry D. Madura.
 Journel Chemicak Physics 1983 79, 926.
 https://doi.org/10.1063/1.445869
 
-[6] https://github.com/ParmEd/ParmEd
+[6] An Efficient Real Space Multigrid QM/MM Electrostatic Coupling.
+Laino, T. Mohamed, F. Laio, A. Parrinello.
+M. J. Chem. Theory Comput. 2005, 1 1176-1184. 
+https://doi.org/10.1021/ct050123f
+
+[7] An Efficient Linear-Scaling Electrostatic Coupling for Treating Periodic Boundary Conditions in QM/MM Simulations.
+Laino, T.; Mohamed, F. Laio, A. and Parrinello.
+M. J. Chem. Theory Comput. 2006 2 (5), 1370-1378
+https://doi.org/10.1021/ct6001169
+
+[8] https://github.com/ParmEd/ParmEd
