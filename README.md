@@ -6,11 +6,12 @@ interface.
 
 The suite is organised with different QM/MM systems at the top level. 
 
-For each biomolecular system there are three different benchmarks, namely:
+For each biomolecular system the suite contains up to three different
+benchmarks, corresponding to different execution scenarios:
 
-1. CP2K QM/MM MD benchmark - `system-name/CP2K/WholeApp-MD`
-2. CP2K QM/MM kernel benchmark - `system-name/CP2K/Kernel`
-3. GROMACS+CP2K QM/MM MD benchmark - `system-name/GRM+CP2K`
+1. CP2K QM/MM MD - `system-name/CP2K/WholeApp-MD`
+2. CP2K QM/MM kernel - `system-name/CP2K/Kernel`
+3. GROMACS+CP2K QM/MM MD - `system-name/GRM+CP2K`
  
 In addition there is a `/tools` directory which contains the code required to run the CP2K kernel benchmark.
 
@@ -18,9 +19,8 @@ In addition there is a `/tools` directory which contains the code required to ru
 
 |Name      |Type                |QM atoms       |Total atoms |Functional      |Basis set       |MD run type  |Periodic?|
 |----------|--------------------|---------------|------------|----------------|----------------|-------------|---------|
-|MQAE      |solute-solvent      |34             |16,396      |BLYP	          |DZVP-MOLOPT-GTH |NVE          |Y        |
-|ClC-19    |ion channel         |19             |150,925     |BLYP	          |DZVP-MOLOPT-GTH |NVE	         |Y        |
-|ClC-253   |ion channel         |253            |150,925     |BLYP	          |DZVP-MOLOPT-GTH |NVE          |Y        |
+|MQAE      |solute-solvent      |34             |16,396      |BLYP	           |DZVP-MOLOPT-GTH |NVE          |Y        |
+|ClC       |ion channel         |19, 253        |150,925     |BLYP	           |DZVP-MOLOPT-GTH |NVE	         |Y        |
 |CBD_PHY   |phytochrome         |68             |167,922     |PBE             |DZVP-MOLOPT-GTH |NVE          |Y        |
 |GFP_QM-77 |fluorescent protein |20, 32, 53, 77 |28,264      |BLYP            |DZVP-GTH-BLYP   |NVT          |N        |
 
@@ -35,18 +35,19 @@ The MM parameters are rebuilt using the Amber forcefields, where the parameters
 for the organic molecule are created using the General Amber Force Field (GAFF) 
 [2] and the water molecules are modelled using the SPCE model [3]. We 
 selected the BLYP functional as the XC functional in keeping with the 
-simulations performed in [1]. An energy cut-off of 300 Ry for the plane waves
+simulations performed in [1]. An energy cut-off of 400 Ry for the plane waves
 was found to be suitable.
 
 
-### ClC-19 and ClC-253
+### ClC
 
-The ClC-19 and ClC-253 systems consist of a (ClC-ec1) chloride ion channel
-embedded in a lipid bilayer (PDB-ID: 1KPK), which is solvated in water. The
-ClC-19 and ClC-253 systems contain 19 and 253 QM atoms respectively, and 
-therefore these systems represent a small and large QM subsystem within a large
-MM subsystem (150,925 atoms in total). These systems are taken from [1] but 
-adapted slightly to reduce the number of QM atoms (by removing waters treated 
+ClC consists of a (ClC-ec1) chloride ion channel
+embedded in a lipid bilayer (PDB-ID: 1KPK), which is solvated in water. Two
+variants are included for this system - ClC-19 and ClC-253 which differ only
+in having respectively 19 and 253 atoms treated quantum mechanically, 
+representing a small and large QM subsystem within a large MM subsystem
+(150,925 atoms in total). These systems are taken from [1] but adapted 
+slightly to reduce the number of QM atoms (by removing waters treated 
 with QM). The QM regions are modelled using the GPW method with the 
 DZVP-MOLOPT-GTH basis set and the BLYP XC functional and the corresponding
 pseudopotentials. An energy cut-off for the plane waves of 300 Ry was found to
@@ -77,7 +78,7 @@ molecules. Unlike the other systems the QM subsystem is treated non-periodically
 by using the Poisson solver for the electrostatics. This means that the 
 non-periodic versions of the GEEP routines will be used.
 
-## Benchmarks
+## Execution scenerios
 
 ### CP2K QM/MM MD
 
@@ -97,43 +98,54 @@ More details can be found in the README file for each system.
 
 ### CP2K QM/MM kernel
 
-These benchmark the performance of the CP2K QM/MM kernel, 
-qmmm_forces_with_gaussian_LG, in isolation for the sake of convenient performance 
-analysis and optimisation. This subroutine computes the contribution to the forces
-due to the long range part of the QM/MM potential using the Gaussian Expansion of 
-the Electrostatic Potential (GEEP) with periodic boundary conditions.
+These benchmark the performance of the CP2K QM/MM subroutine
+qmmm_forces_with_gaussian_LG isolated from the CP2K codebase. This subroutine 
+computes the contribution to the forces due to the long range part of the
+QM/MM potential using the Gaussian Expansion of the Electrostatic Potential
+(GEEP) with periodic boundary conditions. As described in previous
+deliverable D1.2 including in [9], it and closely related routines are
+large contributors to overall CP2K QM/MM simulation runtime and isolating
+it in a kernel facilitates performance analysis and optimisation. As many 
+of the QM/MM routines have a similar structure, optimisations made here 
+can be tested before implementation into related routines. 
 
-The kernel benchmarks were created by running the corresponding whole application 
-benchmark in order to generate the data that feeds into the kernel on a single MPI rank. 
-This means that the data will be dependent on the rank it was generated by, and the 
-total number of processes used. This benchmark runs the kernel subroutine in serial in 
-a way that is representative of the single originating MPI rank in the parallel execution
-context. The code and instructions to generate the relevant data can be found in the 
-/tools directory of the benchmark suite.
+The version of qmmm_forces_with_gaussian_LG included in the benchmark
+suite kernel code includes OpenMP threading optimisations developed by
+BioExcel and reported in the CP2K section of this deliverable. 
+ 
+The kernel benchmarks were created by running the corresponding whole
+application benchmark using a modified version of CP2K that generates the 
+data that feeds into the kernel on a single MPI rank. The data therefore 
+depends on the rank it was generated by and the total number of processes
+used. The kernel benchmarks run the subroutine in serial in a way that is
+representative of its execution by a single MPI rank in the original 
+parallel execution context. The CP2K code modifications and instructions
+to regenerate the relevant data (or indeed generate new kernel benchmarks)
+can be found in the /tools directory of the benchmark suite.
+ 
+The data required to run each kernel benchmark is provided in the /data 
+directory. The code to run the benchmark itself is provided in the /src 
+directory, and the required Makefile is found in the top level of the
+kernel benchmark. The /outputs directory contains the force output from
+running the kernel benchmark and can be used to check the correctness of
+any changes made to the kernel. 
+ 
+When run, the kernel benchmark proceeds by reading in the generated data,
+and then calls qmmm_forces_with_gaussian_LG to calculate the forces. The
+forces are written out in order to check correctness, and the run time 
+for the kernel subroutine itself is reported. 
 
-For each system, this required data is provided in the /data directory. 
-The code to run the benchmark itself is provided in the /src directory,
-and the required Makefile is found in the top level of the kernel benchmark. 
-The /outputs directory contains the force output from running the kernel
-benchmark and can be used to check the correctness of any changes made to the
-kernel. 
 
-When run, a kernel benchmark proceeds by reading in the generated data and 
-then calling the kernel in question, qmmm_forces_with_gaussian_LG, to calculate
-the forces. The forces are written out in order to check for correctness and the
-run time for the kernel subroutine itself is reported using the system_clock().
-This benchmark is designed to run using OpenMP and can be used to determine the 
-speed up on a single process as a function of the number of threads used.
 
 
 ### GROMACS+CP2K QM/MM MD
 
 These benchmark the GROMACS/CP2K interface for performing a QM/MM MD 
 simulation. GROMACS is the main driver for the interface, with libcp2k called to 
-calculate the QM/MM energies and forces each MD step. Input parameters are
+calculate the QM/MM energies and forces each MD step. CP2K input parameters are
 passed through the cp2k.inp file, which is used to generate a force environment
-within CP2K. This is maintained throughout the simulation and is used to improve 
-the performance by using the density function from the previous step to 
+within CP2K. This is maintained throughout the simulation, which aids performance
+by enabling the reuse of density function from the previous step to 
 extrapolate the wavefunction of the next step (using the always stable 
 predictor corrector method - ASPC). At each step, updated atomic positions 
 are passed from GROMACS through calls to libcp2k and the atomic forces and the 
@@ -199,3 +211,5 @@ M. J. Chem. Theory Comput. 2006 2 (5), 1370-1378
 https://doi.org/10.1021/ct6001169
 
 [8] https://github.com/ParmEd/ParmEd
+
+[9] https://github.com/bioexcel/bioexcel-exascale-co-design-benchmarks
