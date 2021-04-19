@@ -29,6 +29,11 @@
         STEPSIZE     1.4999999999999999E-01
         PRECONDITIONER  FULL_ALL
       &END OT
+      &PRINT
+         &RESTART
+            FILENAME wfn
+         &END
+      &END
     &END SCF
     &XC                        ! Parameters needed to compute the electronic exchange potential
       &XC_FUNCTIONAL PBE
