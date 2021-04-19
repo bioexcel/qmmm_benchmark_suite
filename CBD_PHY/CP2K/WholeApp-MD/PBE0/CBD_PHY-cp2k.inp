@@ -45,7 +45,7 @@
         FRACTION 0.25
         &SCREENING
           ! important parameter to get stable HFX calcs
-          EPS_SCHWARZ 1.0E-8
+          EPS_SCHWARZ 1.0E-7
           ! needs a good (GGA) initial guess 
           SCREEN_ON_INITIAL_P TRUE
         &END
