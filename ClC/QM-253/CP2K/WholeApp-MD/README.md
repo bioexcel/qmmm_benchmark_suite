@@ -22,7 +22,7 @@ set ups are included:
 ``ClC-253-cp2k.inp`` - The CP2K MD input file. Contains set up parameters for the MD run 
 and QM parameters. 
 
-``ClC-253-cp2k.inp`` - The CP2K input file to generate the inital SCF wavefunctions. 
+``ClC-253-cp2k-wfn.inp`` - The CP2K input file to generate the inital SCF wavefunctions. 
 Does a single energy point calculation using RUN_TYPE ENERGY.
 
 ``ClC.prmtop`` - Amber forcefield for MM atoms. The Amber12 forcefield and
