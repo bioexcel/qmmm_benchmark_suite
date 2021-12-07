@@ -67,7 +67,7 @@
       &END
 
       &MEMORY
-         MAX_MEMORY  1500     ! In MB per MPI rank
+         MAX_MEMORY  1000     ! In MB per MPI rank
       &END
    &END HF
    &END XC
