@@ -1,7 +1,7 @@
 ; md-nvt.mdp - used as input into grompp to generate nma-nvt.tpr
 integrator  = md    ; MD using leap-frog integrator
 dt          = 0.001 ; 1fs time-step
-nsteps      = 100   ; 100 fs simulation
+nsteps      = 5     ; 100 fs simulation
 
 ; Set output frequency to each step
 nstxout                  = 1 ; Coordinates to trr
@@ -29,6 +29,6 @@ gen-seed                 = -1
 ; CP2K QMMM parameters
 qmmm-cp2k-active              = true   ; Activate QMMM MdModule
 qmmm-cp2k-qmgroup             = QMatoms; Index group of QM atoms
-qmmm-cp2k-qmmethod            = BLYP   ; Method to use
+qmmm-cp2k-qmmethod            = INPUT   ; Method to use
 qmmm-cp2k-qmcharge            = 0      ; Charge of QM system
 qmmm-cp2k-qmmultiplicity      = 0      ; Multiplicity of QM system

@@ -8,41 +8,45 @@
   &DFT
     CHARGE 1
     MULTIPLICITY 1
-    BASIS_SET_FILE_NAME  BASIS_MOLOPT
-    POTENTIAL_FILE_NAME  POTENTIAL
     &MGRID
-      NGRIDS 5
-      CUTOFF 450
-      REL_CUTOFF 50
+      CUTOFF 300
       COMMENSURATE
     &END MGRID
+    &QS
+      METHOD GPW
+      EPS_PGF_ORB 1.0E-15
+       &SE
+         &COULOMB
+           CUTOFF [angstrom] 10.0
+         &END
+         &EXCHANGE
+           CUTOFF [angstrom] 10.0
+         &END
+      &END
+    &END QS
     &SCF
-      SCF_GUESS RESTART
-      EPS_SCF 5.0E-8
-      MAX_SCF 20
-      &OT  T
-        MINIMIZER  DIIS
-        STEPSIZE   0.15
-        PRECONDITIONER FULL_ALL
-      &END OT
-      &OUTER_SCF  T
-        MAX_SCF 20
-        EPS_SCF 5.0E-8
-      &END OUTER_SCF
+      MAX_SCF 30
+      EPS_SCF 1.0E-6
+      SCF_GUESS ATOMIC
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_SINGLE_INVERSE
+      &END
+      &OUTER_SCF
+        EPS_SCF 1.0E-6
+        MAX_SCF 10
+      &END
+      &PRINT
+        &RESTART OFF
+        &END
+        &RESTART_HISTORY OFF
+        &END
+      &END
     &END SCF
     &XC
-      DENSITY_CUTOFF     1.0E-12
-      GRADIENT_CUTOFF    1.0E-12
-      TAU_CUTOFF         1.0E-12
       &XC_FUNCTIONAL BLYP
       &END XC_FUNCTIONAL
     &END XC
-    &QS
-     METHOD GPW
-     EPS_DEFAULT 1.0E-10
-     EXTRAPOLATION ASPC
-     EXTRAPOLATION_ORDER  4
-    &END QS
   &END DFT
   &QMMM
     &CELL
@@ -51,13 +55,8 @@
       C 0.000 0.000 19.352
       PERIODIC XYZ
     &END CELL
-    CENTER EVERY_STEP
-    CENTER_GRID TRUE
-    &WALLS
-      TYPE REFLECTIVE
-    &END WALLS
     ECOUPL GAUSS
-    USE_GEEP_LIB 12
+    USE_GEEP_LIB 15
     &PERIODIC
       GMAX     1.0E+00
       &MULTIPOLE ON
@@ -120,22 +119,22 @@
     &END TOPOLOGY
     &KIND H  
       ELEMENT H  
-      BASIS_SET DZVP-MOLOPT-GTH
+      BASIS_SET DZVP-GTH-BLYP
       POTENTIAL GTH-BLYP
     &END KIND
     &KIND C  
       ELEMENT C  
-      BASIS_SET DZVP-MOLOPT-GTH
+      BASIS_SET DZVP-GTH-BLYP
       POTENTIAL GTH-BLYP
     &END KIND
     &KIND N  
       ELEMENT N  
-      BASIS_SET DZVP-MOLOPT-GTH
+      BASIS_SET DZVP-GTH-BLYP
       POTENTIAL GTH-BLYP
     &END KIND
     &KIND O  
       ELEMENT O  
-      BASIS_SET DZVP-MOLOPT-GTH
+      BASIS_SET DZVP-GTH-BLYP
       POTENTIAL GTH-BLYP
     &END KIND
     &KIND X
