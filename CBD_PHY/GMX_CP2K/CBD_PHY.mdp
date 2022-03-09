@@ -1,4 +1,4 @@
-; md-nvt.mdp - used as input into grompp to generate nma-nvt.tpr
+; mdp for CBD_PHY need to provide CBD_PHY_cp2k.inp
 integrator  = md    ; MD using leap-frog integrator
 dt          = 0.001 ; 1fs time-step
 nsteps      = 5   ; 100 fs simulation
