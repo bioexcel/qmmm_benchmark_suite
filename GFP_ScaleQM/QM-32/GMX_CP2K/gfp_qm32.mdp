@@ -1,4 +1,4 @@
-; md-nvt.mdp - used as input into grompp to generate nma-nvt.tpr
+; mdp for gfp_qm32 need to provide gfp_qm32_cp2k.inp
 integrator  = md    ; MD using leap-frog integrator
 dt          = 0.001 ; 1fs time-step
 nsteps      = 5     ; 100 fs simulation
