@@ -173,6 +173,16 @@ GROMACS/CP2K interface benchmark, the Amber forcefields used in the CP2K benchma
 were converted into GROMACS format using ParmEd [10]. The benchmark is set up to 
 perform 5 MD steps, with a time step of 1 fs.
 
+The benchmarks use a CP2K input file to set the CP2K parameters. The Gromacs `.tpr`
+file can be generated with the following:
+
+```
+gmx grompp -f XXX.mdp -p XXX.top -c XXX.gro -n XXX.ndx -qmi XXX_cp2k.inp -o XXX.tpr
+```
+
+Note that these benchmarks will not produce the exact same dynamics as the CP2K
+versions due to differences in the MD integrator and other MD settings which are
+not like-for-like.
 
 ## References
 
