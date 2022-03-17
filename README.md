@@ -11,7 +11,7 @@ benchmarks, corresponding to different execution scenarios:
 
 1. CP2K QM/MM MD - `system-name/CP2K/WholeApp-MD`
 2. CP2K QM/MM kernel - `system-name/CP2K/Kernel`
-3. GROMACS+CP2K QM/MM MD - `system-name/GRM+CP2K`
+3. GROMACS+CP2K QM/MM MD - `system-name/GRM_CP2K`
  
 In addition there is a `/tools` directory which contains the code required to run the CP2K kernel benchmark.
 
