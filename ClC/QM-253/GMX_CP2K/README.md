@@ -26,7 +26,7 @@ set ups are included:
 
 ``ClC_cp2k.inp`` - The CP2K input file. Contains QM parameters. 
 
-``ClC_cp2k.pdp`` - The pdb coordinates for CP2K. 
+``ClC_cp2k.pdb`` - The pdb coordinates for CP2K. 
 
 
 ### To Run: 
