@@ -13,6 +13,7 @@ This benchmark consists of a short MD simulation of a QM/MM system using CP2K.
 
 * BLYP - using DVZP-MOLOPT-GTH
 * B3LYP - using EMSL: 6-31Gxx
+* * B3LYP-large - B3LYP with a larger QMMM cell
 
 
 ``mqae-cp2k.inp`` - The CP2K input file. Contains set up parameters for the MD run 

@@ -2,6 +2,9 @@
   PROJECT ClC-253-B3LYP
   RUN_TYPE MD
   PRINT_LEVEL LOW
+  &TIMINGS
+     THRESHOLD 0.00000001
+  &END TIMINGS
 &END GLOBAL
 
 &FORCE_EVAL
@@ -20,7 +23,7 @@
     &SCF                        ! Parameters controlling the convergence of the scf. This section should not be changed. 
       SCF_GUESS RESTART
       EPS_SCF 1.0E-6
-      MAX_SCF 30
+      MAX_SCF 50
       &OT  T
         MINIMIZER  DIIS
         STEPSIZE     1.4999999999999999E-01
@@ -64,7 +67,7 @@
       &END
 
       &MEMORY
-         MAX_MEMORY  1500     ! In MB per MPI rank
+         MAX_MEMORY  1000     ! In MB per MPI rank
       &END
    &END HF
    &END XC

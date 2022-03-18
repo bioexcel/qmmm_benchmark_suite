@@ -11,7 +11,7 @@ benchmarks, corresponding to different execution scenarios:
 
 1. CP2K QM/MM MD - `system-name/CP2K/WholeApp-MD`
 2. CP2K QM/MM kernel - `system-name/CP2K/Kernel`
-3. GROMACS+CP2K QM/MM MD - `system-name/GRM+CP2K`
+3. GROMACS+CP2K QM/MM MD - `system-name/GRM_CP2K`
  
 In addition there is a `/tools` directory which contains the code required to run the CP2K kernel benchmark.
 
@@ -140,7 +140,7 @@ for the kernel subroutine itself is reported.
 
 ### GROMACS+CP2K QM/MM MD
 
-These benchmark the GROMACS/CP2K interface for performing a QM/MM MD 
+These benchmark the GROMACS/CP2K interface [8] for performing a QM/MM MD 
 simulation. GROMACS is the main driver for the interface, with libcp2k called to 
 calculate the QM/MM energies and forces each MD step. CP2K input parameters are
 passed through the cp2k.inp file, which is used to generate a force environment
@@ -154,11 +154,12 @@ energy are then calculated and returned.
 This benchmark requires the use of GROMACS built with the CP2K interface. To do
 this, CP2K must first be built as a library. When building GROMACS, libcp2k.h 
 needs to be included in the header search path and the path to libcp2k.a needs 
-to be added to the library path.
+to be added to the library path. Details of how to do this can be found on the 
+Gromacs website [9].
 
 The interface is run in almost the same way as GROMACS, with the required files
 being the topology file (.top), the configuration file (.gro), the MD
-parameters file (grompp.mdp) and the index (.ndx) file. The major differences
+parameters file (.mdp) and the index (.ndx) file. The major differences
 are in the .mdp file where values specific to QM/MM simulation are provided.
 The QM atoms group may be specified here, with the atom numbers given in the
 index file. QM/MM parameters can also be supplied to CP2K in this file. It is
@@ -169,9 +170,19 @@ file.
 For each system, all the required files are provided in the GRM+CP2K directory.
 To ensure consistency between the CP2K standalone benchmark and its corresponding 
 GROMACS/CP2K interface benchmark, the Amber forcefields used in the CP2K benchmark 
-were converted into GROMACS format using ParmEd [8]. The benchmark is set up to 
+were converted into GROMACS format using ParmEd [10]. The benchmark is set up to 
 perform 5 MD steps, with a time step of 1 fs.
 
+The benchmarks use a CP2K input file to set the CP2K parameters. The Gromacs `.tpr`
+file can be generated with the following:
+
+```
+gmx grompp -f XXX.mdp -p XXX.top -c XXX.gro -n XXX.ndx -qmi XXX_cp2k.inp -o XXX.tpr
+```
+
+Note that these benchmarks will not produce the exact same dynamics as the CP2K
+versions due to differences in the MD integrator and other MD settings which are
+not like-for-like.
 
 ## References
 
@@ -210,6 +221,10 @@ Laino, T.; Mohamed, F. Laio, A. and Parrinello.
 M. J. Chem. Theory Comput. 2006 2 (5), 1370-1378
 https://doi.org/10.1021/ct6001169
 
-[8] https://github.com/ParmEd/ParmEd
+[8] https://manual.gromacs.org/documentation/2022-beta1/reference-manual/special/qmmm.html
 
-[9] https://github.com/bioexcel/bioexcel-exascale-co-design-benchmarks
+[9] https://manual.gromacs.org/documentation/2022-beta1/install-guide/index.html#building-with-cp2k-qm-mm-support
+
+[10] https://github.com/ParmEd/ParmEd
+
+
