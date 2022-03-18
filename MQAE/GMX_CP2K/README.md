@@ -13,7 +13,7 @@ interface.
 5 MD steps are performed with a time step of 1 fs. The following XC functional 
 set ups are included:
 
-* BLYP - using DVZP-GTH-BLYP
+* BLYP - using DVZP-MOLOPT-GTH
 
 
 ``mqae.top`` - The Gromacs topology file.
