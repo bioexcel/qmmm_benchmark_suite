@@ -17,12 +17,12 @@ In addition there is a `/tools` directory which contains the code required to ru
 
 ## Biomolecular systems
 
-|Name      |Type                |QM atoms       |Total atoms |Functional      |Basis set       |MD run type  |Periodic?|
-|----------|--------------------|---------------|------------|----------------|----------------|-------------|---------|
-|MQAE      |solute-solvent      |34             |16,396      |BLYP	           |DZVP-MOLOPT-GTH |NVE          |Y        |
-|ClC       |ion channel         |19, 253        |150,925     |BLYP	           |DZVP-MOLOPT-GTH |NVE	         |Y        |
-|CBD_PHY   |phytochrome         |68             |167,922     |PBE             |DZVP-MOLOPT-GTH |NVE          |Y        |
-|GFP_QM-77 |fluorescent protein |20, 32, 53, 77 |28,264      |BLYP            |DZVP-GTH-BLYP   |NVT          |N        |
+|Name      |Type                |QM atoms       |Total atoms |Functional          |Basis set       |MD run type  |Periodic?|
+|----------|--------------------|---------------|------------|--------------------|----------------|-------------|---------|
+|MQAE      |solute-solvent      |34             |16,396      |BLYP, B3LYP         |DZVP-MOLOPT-GTH |NVE          |Y        |
+|ClC       |ion channel         |19, 253        |150,925     |BLYP, B3LYP, PBE0   |DZVP-MOLOPT-GTH |NVE	         |Y        |
+|CBD_PHY   |phytochrome         |68             |167,922     |PBE. PBE0           |DZVP-MOLOPT-GTH |NVE          |Y        |
+|GFP_QM-77 |fluorescent protein |20, 32, 53, 77 |28,264      |BLYP                |DZVP-GTH-BLYP   |NVT          |N        |
 
 
 ### MQAE
