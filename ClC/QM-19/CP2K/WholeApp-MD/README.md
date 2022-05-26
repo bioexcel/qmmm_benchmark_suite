@@ -13,7 +13,7 @@ This benchmark consists of a short MD simulation of a QM/MM system using CP2K.
 set ups are included:
 
 * BLYP - using DVZP-MOLOPT-GTH
-* B3LYP - using EMSL: 6-31Gxx
+* B3LYP - using EMSL: 6-31Gxx, HFX_BASIS and ADMM with DZVP-MOLOPT-GTH
 * PBE0 - using EMSL: 6-31Gxx
 
 
@@ -32,6 +32,8 @@ the TIP3P water model are used.
 
 
 ### To Run: 
+
+Thw ``ClC.pdb`` and ``ClC.prmtop`` files ahould be in the same directory as the input file.
 
     mpi_exec -n $NPROCS cp2k.psmp -i ClC-19-cp2k.inp -o output.log
 

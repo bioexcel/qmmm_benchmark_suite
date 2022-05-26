@@ -12,7 +12,7 @@ This benchmark consists of a short MD simulation of a QM/MM system using CP2K.
 5 MD steps are performed with a time step of 1 fs. The following XC functional set ups are included:
 
 * BLYP - using DVZP-MOLOPT-GTH
-* B3LYP - using EMSL: 6-31Gxx
+* B3LYP - using EMSL: 6-31Gxx and ADMM with DZVP-MOLOPT-GTH
 * * B3LYP-large - B3LYP with a larger QMMM cell
 
 
