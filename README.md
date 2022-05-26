@@ -11,7 +11,12 @@ benchmarks, corresponding to different execution scenarios:
 
 1. CP2K QM/MM MD - `system-name/CP2K/WholeApp-MD`
 2. GROMACS+CP2K QM/MM MD - `system-name/GRM_CP2K`
- 
+
+The tools directory contains a [conversion guide](/tools/convert.md)
+ for converting from CP2K to GROMACS+CP2K input formats. 
+
+Additional input preparation scripts can be found at
+[CP2K_qmmm_input_preparation_scripts](https://github.com/bioexcel/CP2K_qmmm_input_preparation_scripts).
 
 ## Biomolecular systems
 
