@@ -20,13 +20,94 @@ Additional input preparation scripts can be found at
 
 ## Biomolecular systems
 
-|Name      |Type                |QM atoms       |Total atoms |Functional          |Basis set       |MD run type  |Periodic?|
-|----------|--------------------|---------------|------------|--------------------|----------------|-------------|---------|
-|MQAE      |solute-solvent      |34             |16,396      |BLYP, B3LYP         |DZVP-MOLOPT-GTH |NVE          |Y        |
-|ClC       |ion channel         |19, 253        |150,925     |BLYP, B3LYP, PBE0   |DZVP-MOLOPT-GTH |NVE	         |Y        |
-|CBD_PHY   |phytochrome         |68             |167,922     |PBE. PBE0           |DZVP-MOLOPT-GTH |NVE          |Y        |
-|GFP_QM-77 |fluorescent protein |20, 32, 53, 77 |28,264      |BLYP                |DZVP-GTH-BLYP   |NVT          |N        |
 
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-0pky">Name</th>
+    <th class="tg-0pky">Type</th>
+    <th class="tg-0pky">Total atoms</th>
+    <th class="tg-0pky">QM atoms</th>
+    <th class="tg-0pky">Functional</th>
+    <th class="tg-0pky">QM Cell Size</th>
+    <th class="tg-0pky">Basis set</th>
+    <th class="tg-0pky">Time step</th>
+    <th class="tg-0lax">MD Type</th>
+    <th class="tg-0lax">Periodic</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">MQAE-BLYP</td>
+    <td class="tg-0pky" rowspan="3">solute-solvent</td>
+    <td class="tg-0pky" rowspan="3">~16,000</td>
+    <td class="tg-0pky" rowspan="3">34</td>
+    <td class="tg-0pky">BLYP</td>
+    <td class="tg-0pky" rowspan="2">14 x 17 x 11</td>
+    <td class="tg-0pky">DZVP-MOLOPT</td>
+    <td class="tg-0pky" rowspan="11">1 fs</td>
+    <td class="tg-0lax" rowspan="7">NVE</td>
+    <td class="tg-0lax" rowspan="7">Y</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">MQAE-B3LYP</td>
+    <td class="tg-0pky" rowspan="2">B3LYP</td>
+    <td class="tg-0pky" rowspan="2">6-31Gxx</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">MQAE-B3LYP-large</td>
+    <td class="tg-0pky">28 x 34 x 22</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">CBD_PHY-PBE</td>
+    <td class="tg-0pky" rowspan="2">phytochrome</td>
+    <td class="tg-0pky" rowspan="2">~168,000</td>
+    <td class="tg-0pky" rowspan="2">68</td>
+    <td class="tg-0pky">PBE</td>
+    <td class="tg-0pky" rowspan="2">25 x 25 x 25</td>
+    <td class="tg-0pky">DZVP-MOLOPT</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">CBD_PHY-PBE0</td>
+    <td class="tg-0pky">PBE0</td>
+    <td class="tg-0pky">HFX_BASIS <span style="font-weight:400;font-style:normal;text-decoration:none">TZV2P</span></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">ClC-19-BLYP</td>
+    <td class="tg-0pky" rowspan="2">ion channel</td>
+    <td class="tg-0pky" rowspan="2">~150,000</td>
+    <td class="tg-0pky">19</td>
+    <td class="tg-0pky" rowspan="2">BLYP</td>
+    <td class="tg-0pky">18 x 18 x 18</td>
+    <td class="tg-0pky" rowspan="2">DVZP-MOLOPT</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">ClC-253-BLYP</td>
+    <td class="tg-0pky">253</td>
+    <td class="tg-0pky">27 x 25 x 25</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax" rowspan="4">GFP_ScaleQM</td>
+    <td class="tg-0lax" rowspan="4">fluorescent protein</td>
+    <td class="tg-0lax" rowspan="4">~28,000</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax" rowspan="4">BLYP</td>
+    <td class="tg-0lax" rowspan="4">40 x 40 x 40</td>
+    <td class="tg-0lax" rowspan="4">DZVP-GTH-BLYP</td>
+    <td class="tg-0lax" rowspan="4">NVT</td>
+    <td class="tg-0lax" rowspan="4">N</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">32</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">53</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">77</td>
+  </tr>
+</tbody>
+</table>
 
 ### MQAE
 
