@@ -177,7 +177,9 @@ For each system the CP2K input file (.inp), the initial input coordinates (.pdb)
 and the Amber MM forcefield (.prmtop) are provided in the WholeApp-MD directory.
 More details can be found in the README file for each system. 
 
-
+The raw data for the performance of these CP2K benchmarks is available in the 
+[QM/MM benchmarking data](https://github.com/bioexcel/qmmm_benchmark_results) 
+repository.
 
 ### GROMACS+CP2K QM/MM MD
 
