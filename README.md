@@ -117,9 +117,8 @@ treated with QM whereas the remaining water atoms are treated with MM. This
 system is chosen to represent a system with a small QM and a small MM subsystem.
 The MM parameters are rebuilt using the Amber forcefields, where the parameters 
 for the organic molecule are created using the General Amber Force Field (GAFF) 
-[2] and the water molecules are modelled using the SPCE model [3]. We 
-selected the BLYP functional as the XC functional in keeping with the 
-simulations performed in [1]. An energy cut-off of 400 Ry for the plane waves
+[2] and the water molecules are modelled using the SPCE model [3].
+An energy cut-off of 400 Ry for the plane waves
 was found to be suitable.
 
 
@@ -132,9 +131,8 @@ in having respectively 19 and 253 atoms treated quantum mechanically,
 representing a small and large QM subsystem within a large MM subsystem
 (150,925 atoms in total). These systems are taken from [1] but adapted 
 slightly to reduce the number of QM atoms (by removing waters treated 
-with QM). The QM regions are modelled using the GPW method with the 
-DZVP-MOLOPT-GTH basis set and the BLYP XC functional and the corresponding
-pseudopotentials. An energy cut-off for the plane waves of 300 Ry was found to
+with QM). The QM regions are modelled using the GPW method.
+An energy cut-off for the plane waves of 300 Ry was found to
 be suitable. The Amber14 forcefield [2] is used for the protein and lipid14 
 forcefield is used for the lipid molecules [4], and water molecules are 
 treated using the TIP3P model [5].
@@ -145,7 +143,7 @@ This system contains a phytochrome dimer (PBD-ID: 4O0P) with a bound chromophore
 solvated in water. There are 68 QM atoms in this system and 167,922 atoms in total, 
 and therefore it represents a fairly large QM subsystem (68 QM atoms) combined 
 within a large MM subsystem (167,922 atoms in total). The QM region is modelled 
-using the GPW method with DZVP-MOLOPT-GTH basis set and PBE XC functional. An 
+using the GPW method. An 
 energy cut-off for the plane waves of 400 Ry was found to be suitable. For the MM 
 part the Amber03 forcefield is used for the protein and water molecules are treated
 using the TIP3P model. 
@@ -154,8 +152,7 @@ using the TIP3P model.
 
 The GFP_QM systems contains a green fluorescent protein (GFP) in solution
 (PDB-ID: 1GFL). They represent a range of different QM subsystem sizes within a
-small MM subsystem (28,264 atoms in total). For the QM atoms the DZVP-GTH-BLYP 
-basis set is used along with the BLYP XC functional. An energy cut-off for the 
+small MM subsystem (28,264 atoms in total). An energy cut-off for the 
 plane waves of 300 Ry was found to be suitable. For the MM part of the system, 
 the Amber03 forcefield is used for the protein and TIP3P model for the water 
 molecules. Unlike the other systems the QM subsystem is treated non-periodically
